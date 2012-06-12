@@ -21,19 +21,16 @@ typedef void (^RadiusAnimCompletion)();
 
 @implementation RZCircleView
 
-@synthesize radius = _radius;
-@synthesize color = _color;
 @synthesize circleLayer = _circleLayer;
 @synthesize radiusCompletion = _radiusCompletion;
 
 - (id)initWithRadius:(CGFloat)radius color:(UIColor *)color{
     if (self = [super initWithFrame:CGRectMake(0, 0, radius*2, radius*2)]){
-        _radius = radius;
-        self.color = color;
         self.backgroundColor = [UIColor clearColor];
         self.clipsToBounds = NO;
+        self.layer.masksToBounds = NO;
         
-        self.circleLayer = [[RZCircleLayer alloc] initWithRadius:self.radius color:self.color];
+        self.circleLayer = [[RZCircleLayer alloc] initWithRadius:radius color:color];
         self.circleLayer.frame = self.bounds;
         [self.layer addSublayer:self.circleLayer];
         [self.circleLayer setNeedsDisplay];
@@ -42,10 +39,31 @@ typedef void (^RadiusAnimCompletion)();
     
 }
 
+#pragma mark - Properties
+
+- (CGFloat)radius
+{
+    return self.circleLayer.radius;
+}
+
 - (void)setRadius:(CGFloat)radius{
-    _radius = radius;
     self.frame = [self frameForRadius:radius];
     self.circleLayer.radius = self.radius;
+}
+
+- (UIColor*)color
+{
+    return self.circleLayer.color;
+}
+
+- (void)setColor:(UIColor *)color
+{
+    self.circleLayer.color = color;
+}
+
+- (CGFloat)borderWidth
+{
+    return self.circleLayer.circleBorderWidth;
 }
 
 - (void)setBorderWidth:(CGFloat)borderWidth
@@ -53,10 +71,17 @@ typedef void (^RadiusAnimCompletion)();
     self.circleLayer.circleBorderWidth = borderWidth;
 }
 
+- (UIColor*)borderColor
+{
+    return self.circleLayer.circleBorderColor;
+}
+
 - (void)setBorderColor:(UIColor *)borderColor
 {
     self.circleLayer.circleBorderColor = borderColor;
 }
+
+#pragma mark - Layout and animation
 
 - (CGRect)frameForRadius:(CGFloat)radius{
     CGPoint center = self.center;
@@ -72,7 +97,6 @@ typedef void (^RadiusAnimCompletion)();
                duration:(CFTimeInterval)duration
              completion:(void (^)())completion
 {
-    _radius = radius;
     self.radiusCompletion = completion;
         
     CABasicAnimation *anim = [CABasicAnimation animationWithKeyPath:@"radius"];
@@ -88,7 +112,6 @@ typedef void (^RadiusAnimCompletion)();
 }
 
 - (void)layoutSubviews{
-    [super layoutSubviews];
     self.circleLayer.frame = self.bounds;
 }
 

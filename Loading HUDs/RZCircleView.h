@@ -12,7 +12,9 @@
 @interface RZCircleView : UIView
 
 @property (assign, nonatomic) CGFloat radius;
-@property (strong, nonatomic) UIColor *color;
+@property (assign, nonatomic) UIColor *color;
+@property (assign, nonatomic) CGFloat borderWidth;
+@property (assign, nonatomic) UIColor *borderColor;
 
 - (id)initWithRadius:(CGFloat)radius color:(UIColor*)color;
 - (void)animateToRadius:(CGFloat)radius 
@@ -20,8 +22,6 @@
                duration:(CFTimeInterval)duration
              completion:(void (^)())completion;
 
-- (void)setBorderWidth:(CGFloat)borderWidth;
-- (void)setBorderColor:(UIColor *)borderColor;
 - (RZCircleLayer*)circleLayer;
 
 @end

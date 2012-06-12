@@ -32,7 +32,7 @@
 
 + (BOOL)needsDisplayForKey:(NSString *)key{
     if ([key isEqualToString:@"radius"] || [key isEqualToString:@"color"] ||
-        [key isEqualToString:@"borderWidth"] || [key isEqualToString:@"borderColor"])
+        [key isEqualToString:@"circleBorderWidth"] || [key isEqualToString:@"circleBorderColor"])
         return YES;
     
     return [super needsDisplayForKey:key];;

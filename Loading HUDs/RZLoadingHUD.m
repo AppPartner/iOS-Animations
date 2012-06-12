@@ -16,7 +16,7 @@
 #define kDefaultFlipTime            0.15
 #define kDefaultSizeTime            0.15
 #define kDefaultOverlayTime         0.2
-#define kCircleRadiusMultiplier     1.2
+#define kPopupMultiplier            1.2
 
 @interface RZLoadingHUD ()
 
@@ -35,6 +35,7 @@
 - (void)setupPageFlipper:(BOOL)open;
 - (void)addHudToOverlay;
 - (void)popOutCircle:(BOOL)poppingOut;
+
 - (void)animateCircleShadowToPath:(CGPathRef)path 
                      shadowRadius:(CGFloat)shadowRadius 
                             alpha:(CGFloat)alpha
@@ -93,6 +94,7 @@
     if (self = [super initWithFrame:CGRectMake(0, 0, 768, 1024)]){
         
         self.usingFold = NO;
+        self.hudStyle = style;
         self.overlayColor = overlayColor;
         self.hudColor = hudColor;
         self.spinnerColor = spinnerColor;
@@ -207,11 +209,11 @@
     
     if (self.hudStyle == kRZHudStyle_Box)
     {
-        
+    
     }
     else if (self.hudStyle == kRZHudStyle_Circle)
     {
-        CGFloat initialRadius = roundf(self.circleRadius/kCircleRadiusMultiplier);
+        CGFloat initialRadius = roundf(self.circleRadius/kPopupMultiplier);
         
         self.hudContainerView = [[UIView alloc] initWithFrame:CGRectIntegral(CGRectMake(0, 0, self.circleRadius*2.5, self.circleRadius*2.5))];
         self.hudContainerView.backgroundColor = [UIColor clearColor];
@@ -224,7 +226,7 @@
         [self.circleView setBorderWidth:self.borderWidth];
         [self.circleView setBorderColor:self.borderColor];
         self.circleView.clipsToBounds = NO;
-        self.circleView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        self.circleView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         self.circleView.frame = self.hudContainerView.bounds;
         [self.hudContainerView addSubview:self.circleView];
         
@@ -240,7 +242,7 @@
         // add empty view to host shadow layer
         self.shadowView = [[UIView alloc] initWithFrame:self.hudContainerView.bounds];
         self.shadowView.backgroundColor = [UIColor clearColor];
-        self.shadowView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        self.shadowView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         self.shadowView.clipsToBounds = NO;
         self.shadowView.layer.shadowColor = [UIColor blackColor].CGColor;
         self.shadowView.layer.shadowOpacity = 0.0;
@@ -316,7 +318,7 @@
                 
         [self animateCircleShadowToPath:[self shadowPathForRadius:self.circleRadius raisedState:YES].CGPath
                            shadowRadius:3.0
-                                  alpha:0.15
+                                  alpha:0.14
                                   curve:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]
                                duration:kDefaultSizeTime];
         
@@ -333,7 +335,7 @@
                               }];
     }
     else{
-        CGFloat newRadius = roundf(self.circleRadius / kCircleRadiusMultiplier);
+        CGFloat newRadius = roundf(self.circleRadius / kPopupMultiplier);
         
         [self animateCircleShadowToPath:[self shadowPathForRadius:newRadius raisedState:NO].CGPath
                            shadowRadius:2.0
@@ -416,15 +418,35 @@
 - (UIBezierPath*)shadowPathForRadius:(CGFloat)radius raisedState:(BOOL)raised{
     
     CGPoint containerCenter = CGPointMake(self.hudContainerView.bounds.size.width/2, self.hudContainerView.bounds.size.height/2);
-    CGRect shadowEllipseRect = CGRectMake(raised ? containerCenter.x - (radius*1.05) : containerCenter.x - radius, 
-                                          containerCenter.y - radius, 
-                                          raised ? radius * 2.1 : radius*2,
-                                          raised ? radius * 2.25 : radius*2);
+    CGRect shadowEllipseRect = CGRectMake(raised ? containerCenter.x - (radius*1.025) : containerCenter.x - radius, 
+                                          raised ? containerCenter.y - (radius*0.97) : containerCenter.y - radius,
+                                          raised ? radius * 2.05 : radius*2,
+                                          raised ? radius * 2.2 : radius*2);
     
     return [UIBezierPath bezierPathWithOvalInRect:shadowEllipseRect];
 }
 
-#pragma mark - properties
+#pragma mark - Properties
+
+- (void)setHudStyle:(RZHudStyle)hudStyle
+{
+    if (self.superview){
+        NSLog(@"Cannot set HUD style after HUD is presented!");
+        return;
+    }
+    
+    _hudStyle = hudStyle;
+}
+
+- (void)setCircleRadius:(CGFloat)circleRadius
+{
+    if (self.superview){
+        NSLog(@"Cannot set HUD circle radius after HUD is presented!");
+        return;
+    }
+    
+    _circleRadius = circleRadius;
+}
 
 
 #pragma mark - Controllable page flipper delegate
