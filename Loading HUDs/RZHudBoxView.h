@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "RZHudBoxLayer.h"
 
 @interface RZHudBoxView : UIView
 
@@ -16,12 +15,10 @@
 @property (nonatomic, assign) CGFloat borderWidth;
 @property (nonatomic, assign) UIColor *borderColor;
 
-@property (nonatomic, copy) NSString *labelText;
-@property (nonatomic, strong) UIColor *labelColor;
-@property (nonatomic, strong) UIFont *labelFont;
+@property (nonatomic, assign) NSString *labelText;
+@property (nonatomic, assign) UIColor *labelColor;
+@property (nonatomic, assign) UIFont *labelFont;
 
 - (id)initWithColor:(UIColor*)color cornerRadius:(CGFloat)cornerRadius;
-
-- (RZHudBoxLayer*)hudBoxLayer;
 
 @end

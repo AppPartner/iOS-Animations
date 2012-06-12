@@ -8,6 +8,7 @@
 
 #import "RZLoadingHUD.h"
 #import "RZCircleView.h"
+#import "RZHudBoxView.h"
 #import "UIView+Utils.h"
 #import "UIBezierPath+CirclePath.h"
 
@@ -15,7 +16,7 @@
 
 #define kDefaultFlipTime            0.15
 #define kDefaultSizeTime            0.15
-#define kDefaultOverlayTime         0.2
+#define kDefaultOverlayTime         0.25
 #define kPopupMultiplier            1.2
 
 @interface RZLoadingHUD ()
@@ -23,6 +24,7 @@
 @property (strong, nonatomic) UIView *hudContainerView;
 @property (strong, nonatomic) UIView *shadowView;
 @property (strong, nonatomic) RZCircleView *circleView;
+@property (strong, nonatomic) RZHudBoxView *hudBoxView;
 @property (strong, nonatomic) ControllablePageFlipper *pageFlipper;
 @property (strong, nonatomic) UIActivityIndicatorView *spinnerView;
 @property (copy, nonatomic) HUDDismissBlock dismissBlock;
@@ -63,10 +65,12 @@
 
 @synthesize cornerRadius = _cornerRadius;
 @synthesize labelColor = _labelColor;
+@synthesize labelFont = _labelFont;
 @synthesize labelText = _labelText;
 
 @synthesize hudContainerView = _hudContainerView;
 @synthesize shadowView = _shadowView;
+@synthesize hudBoxView = _hudBoxView;
 @synthesize circleView = _circleView;
 @synthesize pageFlipper = _pageFlipper;
 @synthesize spinnerView = _spinnerView;
@@ -79,7 +83,7 @@
 
 - (id)init
 {
-  return  [self initWithStyle:kRZHudStyle_Box
+  return  [self initWithStyle:RZHudStyleBox
                  overlayColor:[UIColor clearColor]
                      hudColor:[UIColor blackColor]
                  spinnerColor:[UIColor whiteColor]];
@@ -100,11 +104,12 @@
         self.spinnerColor = spinnerColor;
         self.borderColor = nil;
         self.borderWidth = 0;
-        self.hudAlpha = 0.95;
+        self.hudAlpha = 0.9;
         self.shadowAlpha = 0.15;
         self.circleRadius = 40.0;
-        self.cornerRadius = 8.0;
+        self.cornerRadius = 16.0;
         self.labelColor = [UIColor whiteColor];
+        self.labelFont = [UIFont systemFontOfSize:17];
         
         // clear for now, could add a gradient or something here
         self.backgroundColor = [UIColor clearColor];
@@ -168,27 +173,28 @@
         return;
     }
     
-    if (self.hudStyle != kRZHudStyle_Overlay)
+    if (self.hudStyle != RZHudStyleOverlay)
         [self.spinnerView stopAnimating];
-        
-    [UIView animateWithDuration:kDefaultOverlayTime
-                          delay:0
-                        options:UIViewAnimationOptionBeginFromCurrentState
-                     animations:^{
-                         self.backgroundColor = [UIColor clearColor];
-                     }
-                     completion:NULL
-     ];
     
-    if (self.hudStyle != kRZHudStyle_Overlay){
+    if (self.hudStyle == RZHudStyleCircle){
         [self popOutCircle:NO];
     }
     else {
-        [self removeFromSuperview];
-        if (self.dismissBlock){
-            self.dismissBlock();
-            self.dismissBlock = nil;
-        }
+        [UIView animateWithDuration:kDefaultOverlayTime
+                              delay:0
+                            options:UIViewAnimationOptionBeginFromCurrentState
+                         animations:^{
+                             self.backgroundColor = [UIColor clearColor];
+                             self.hudBoxView.alpha = 0.0;
+                         }
+                         completion:^(BOOL finished) {
+                             [self removeFromSuperview];
+                             if (self.dismissBlock){
+                                 self.dismissBlock();
+                                 self.dismissBlock = nil;
+                             }
+                         }
+         ];
     }
 }
 
@@ -207,11 +213,30 @@
 {
     if (self.superview) return;
     
-    if (self.hudStyle == kRZHudStyle_Box)
+    if (self.hudStyle == RZHudStyleBox)
     {
-    
+        self.hudBoxView = [[RZHudBoxView alloc] initWithColor:self.hudColor cornerRadius:self.cornerRadius];
+        self.hudBoxView.borderColor = self.borderColor;
+        self.hudBoxView.borderWidth = self.borderWidth;
+        self.hudBoxView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        self.hudBoxView.labelText = self.labelText;
+        self.hudBoxView.labelColor = self.labelColor;
+        self.hudBoxView.labelFont = self.labelFont;
+        
+        // add spinner view to center of box view
+        self.spinnerView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        self.spinnerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        self.spinnerView.hidesWhenStopped = YES;
+        self.spinnerView.color = self.spinnerColor;
+        self.spinnerView.backgroundColor = [UIColor clearColor];
+        if (self.labelText)
+            self.spinnerView.center = CGPointMake(self.hudBoxView.bounds.size.width/2,self.hudBoxView.bounds.size.height*2/5);
+        else
+            self.spinnerView.center = CGPointMake(self.hudBoxView.bounds.size.width/2,self.hudBoxView.bounds.size.height/2);
+        [self.hudBoxView addSubview:self.spinnerView];
+        
     }
-    else if (self.hudStyle == kRZHudStyle_Circle)
+    else if (self.hudStyle == RZHudStyleCircle)
     {
         CGFloat initialRadius = roundf(self.circleRadius/kPopupMultiplier);
         
@@ -219,12 +244,11 @@
         self.hudContainerView.backgroundColor = [UIColor clearColor];
         self.hudContainerView.clipsToBounds = NO;
         self.hudContainerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        self.hudContainerView.alpha = 0.99;
         
         // setup hud view and mask
         self.circleView = [[RZCircleView alloc] initWithRadius:initialRadius color:self.hudColor];
-        [self.circleView setBorderWidth:self.borderWidth];
-        [self.circleView setBorderColor:self.borderColor];
+        self.circleView.borderWidth = self.borderWidth;
+        self.circleView.borderColor = self.borderColor;
         self.circleView.clipsToBounds = NO;
         self.circleView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         self.circleView.frame = self.hudContainerView.bounds;
@@ -277,28 +301,44 @@
     }
     
     // make sure the frame is an integral rect, centered
-    self.hudContainerView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
-    self.hudContainerView.frame = CGRectIntegral(self.hudContainerView.frame);
+    UIView *hudView = nil;
+    if (self.hudStyle == RZHudStyleCircle)
+        hudView = self.hudContainerView;
+    else if (self.hudStyle == RZHudStyleBox)
+        hudView = self.hudBoxView;
     
-    if (self.usingFold && self.hudStyle != kRZHudStyle_Overlay){
+    hudView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+    hudView.frame = CGRectIntegral(hudView.frame);
+    
+    if (self.usingFold && self.hudStyle != RZHudStyleOverlay){
         [self setupPageFlipper:NO];
         [self addSubview:self.pageFlipper];
         [self.pageFlipper animateToState:kCPF_Open];
     }
     else{
-        if (self.hudStyle != kRZHudStyle_Overlay){
-            self.circleView.alpha = 0.0;
-            [self addSubview:self.hudContainerView];
+        if (self.hudStyle != RZHudStyleOverlay){
+            hudView.alpha = 0.0;
+            [self addSubview:hudView];
         }
         
         [UIView animateWithDuration:kDefaultOverlayTime
                          animations:^{
-                             self.circleView.alpha = 1.0;
+                             hudView.alpha = self.hudAlpha;
                              self.backgroundColor = self.overlayColor;
                          }
                          completion:^(BOOL finished) {
-                             if (self.hudStyle != kRZHudStyle_Overlay)
+                             if (self.hudStyle == RZHudStyleCircle){
                                  [self popOutCircle:YES];
+                             }
+                             else if (self.hudStyle == RZHudStyleBox){
+                                 self.fullyPresented = YES;
+                                 if (self.pendingDismissal){
+                                     [self dismiss];
+                                 }
+                                 else{
+                                     [self.spinnerView startAnimating];
+                                 }
+                             }
                              else{
                                  self.fullyPresented = YES;
                                  if (self.pendingDismissal){
@@ -448,6 +488,11 @@
     _circleRadius = circleRadius;
 }
 
+- (void)setLabelText:(NSString *)labelText
+{
+    _labelText = labelText;
+    self.hudBoxView.labelText = labelText;
+}
 
 #pragma mark - Controllable page flipper delegate
 

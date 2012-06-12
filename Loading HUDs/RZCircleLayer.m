@@ -43,18 +43,12 @@
 {   
     CGPoint center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
     CGContextSetFillColorWithColor(ctx, self.color.CGColor);
+    CGContextSetLineWidth(ctx, self.circleBorderWidth);
+    CGContextSetStrokeColorWithColor(ctx, self.circleBorderColor ? self.circleBorderColor.CGColor : [UIColor clearColor].CGColor);
 
-    CGContextAddArc(ctx, center.x, center.y, self.radius, 0, 2*M_PI, YES);
+    CGContextAddArc(ctx, center.x, center.y, self.radius - self.circleBorderWidth/2, 0, 2*M_PI, YES);
     CGContextClosePath(ctx);
-    CGContextFillPath(ctx);
-    
-    if (self.circleBorderColor && self.circleBorderWidth > 0.0){
-        CGContextSetLineWidth(ctx, self.circleBorderWidth);
-        CGContextSetStrokeColorWithColor(ctx, self.circleBorderColor.CGColor);
-        CGContextAddArc(ctx, center.x, center.y, self.radius, 0, 2*M_PI, YES);
-        CGContextClosePath(ctx);
-        CGContextStrokePath(ctx);
-    }
+    CGContextDrawPath(ctx, kCGPathFillStroke);
 }
 
 @end

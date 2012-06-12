@@ -12,9 +12,9 @@
 typedef void (^HUDDismissBlock)();
 
 typedef enum {
-    kRZHudStyle_Circle,
-    kRZHudStyle_Box,
-    kRZHudStyle_Overlay
+    RZHudStyleCircle,
+    RZHudStyleBox,
+    RZHudStyleOverlay
 } RZHudStyle;
 
 @interface RZLoadingHUD : UIView <CPFlipperDelegate>
@@ -36,6 +36,7 @@ typedef enum {
 // these apply to box hud style only
 @property (assign, nonatomic) CGFloat cornerRadius;
 @property (strong, nonatomic) UIColor* labelColor;
+@property (strong, nonatomic) UIFont* labelFont;
 @property (strong, nonatomic) NSString* labelText;
 
 - (id)initWithStyle:(RZHudStyle)style
