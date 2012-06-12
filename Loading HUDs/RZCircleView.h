@@ -20,6 +20,8 @@
                duration:(CFTimeInterval)duration
              completion:(void (^)())completion;
 
+- (void)setBorderWidth:(CGFloat)borderWidth;
+- (void)setBorderColor:(UIColor *)borderColor;
 - (RZCircleLayer*)circleLayer;
 
 @end

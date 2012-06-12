@@ -48,6 +48,16 @@ typedef void (^RadiusAnimCompletion)();
     self.circleLayer.radius = self.radius;
 }
 
+- (void)setBorderWidth:(CGFloat)borderWidth
+{
+    self.circleLayer.circleBorderWidth = borderWidth;
+}
+
+- (void)setBorderColor:(UIColor *)borderColor
+{
+    self.circleLayer.circleBorderColor = borderColor;
+}
+
 - (CGRect)frameForRadius:(CGFloat)radius{
     CGPoint center = self.center;
     CGRect frame = self.frame;

@@ -11,8 +11,10 @@
 
 @interface RZCircleLayer : CALayer
 
-@property (assign, nonatomic) CGFloat radius;
-@property (retain, nonatomic) UIColor *color;
+@property (assign, atomic) CGFloat radius;
+@property (assign, atomic) CGFloat circleBorderWidth;
+@property (strong, atomic) UIColor *color;
+@property (strong, atomic) UIColor *circleBorderColor;
 
 - (id)initWithRadius:(CGFloat)radius color:(UIColor*)color;
 

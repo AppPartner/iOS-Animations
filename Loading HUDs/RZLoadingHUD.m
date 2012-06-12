@@ -221,6 +221,8 @@
         
         // setup hud view and mask
         self.circleView = [[RZCircleView alloc] initWithRadius:initialRadius color:self.hudColor];
+        [self.circleView setBorderWidth:self.borderWidth];
+        [self.circleView setBorderColor:self.borderColor];
         self.circleView.clipsToBounds = NO;
         self.circleView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.circleView.frame = self.hudContainerView.bounds;
