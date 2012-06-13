@@ -52,6 +52,7 @@
 
 @synthesize hudStyle = _hudStyle;
 
+@synthesize customView = _customView;
 @synthesize overlayColor = _overlayColor;
 @synthesize hudColor = _hudColor;
 @synthesize spinnerColor = _spinnerColor;
@@ -83,7 +84,7 @@
 
 - (id)init
 {
-  return  [self initWithStyle:RZHudStyleBox
+  return  [self initWithStyle:RZHudStyleBoxLoading
                  overlayColor:[UIColor clearColor]
                      hudColor:[UIColor blackColor]
                  spinnerColor:[UIColor whiteColor]];
@@ -210,9 +211,10 @@
 {
     if (self.superview) return;
     
-    if (self.hudStyle == RZHudStyleBox)
+    if (self.hudStyle == RZHudStyleBoxLoading || self.hudStyle == RZHudStyleBoxInfo)
     {
-        self.hudBoxView = [[RZHudBoxView alloc] initWithColor:self.hudColor cornerRadius:self.cornerRadius];
+        RZHudBoxStyle subStyle = self.hudStyle == RZHudStyleBoxLoading ? RZHudBoxStyleLoading : RZHudBoxStyleInfo;
+        self.hudBoxView = [[RZHudBoxView alloc] initWithStyle:subStyle color:self.hudColor cornerRadius:self.cornerRadius];
         self.hudBoxView.borderColor = self.borderColor;
         self.hudBoxView.borderWidth = self.borderWidth;
         self.hudBoxView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
@@ -220,7 +222,7 @@
         self.hudBoxView.labelColor = self.labelColor;
         self.hudBoxView.labelFont = self.labelFont;
         self.hudBoxView.spinnerColor = self.spinnerColor;
-        [self.hudBoxView setActivityState:YES];
+        self.hudBoxView.customView = self.customView;
     }
     else if (self.hudStyle == RZHudStyleCircle)
     {
@@ -290,7 +292,7 @@
     UIView *hudView = nil;
     if (self.hudStyle == RZHudStyleCircle)
         hudView = self.hudContainerView;
-    else if (self.hudStyle == RZHudStyleBox)
+    else if (self.hudStyle == RZHudStyleBoxLoading || self.hudStyle == RZHudStyleBoxInfo)
         hudView = self.hudBoxView;
     
     hudView.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
@@ -315,13 +317,10 @@
                              if (self.hudStyle == RZHudStyleCircle){
                                  [self popOutCircle:YES];
                              }
-                             else if (self.hudStyle == RZHudStyleBox){
+                             else if (self.hudStyle == RZHudStyleBoxLoading || self.hudStyle == RZHudStyleBoxInfo){
                                  self.fullyPresented = YES;
                                  if (self.pendingDismissal){
                                      [self dismiss];
-                                 }
-                                 else{
-                                     [self.hudBoxView setActivityState:YES];
                                  }
                              }
                              else{
@@ -474,6 +473,16 @@
     }
     
     _circleRadius = circleRadius;
+}
+
+- (void)setCustomView:(UIView *)customView
+{
+    _customView = customView;
+    if (self.hudBoxView)
+    {
+        self.hudBoxView.customView = customView;
+    }
+
 }
 
 - (void)setLabelText:(NSString *)labelText

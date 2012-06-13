@@ -13,20 +13,24 @@ typedef void (^HUDDismissBlock)();
 
 typedef enum {
     RZHudStyleCircle,
-    RZHudStyleBox,
+    RZHudStyleBoxInfo,
+    RZHudStyleBoxLoading,
     RZHudStyleOverlay
 } RZHudStyle;
 
 @interface RZLoadingHUD : UIView <CPFlipperDelegate>
 
+/// @name Hud Style Properties
+/// This should only be set prior to showing the hud
 @property (assign, nonatomic) RZHudStyle hudStyle;
 
+/// @name Style properties
+@property (strong, nonatomic) UIView  *customView;
 @property (strong, nonatomic) UIColor *overlayColor;
 @property (strong, nonatomic) UIColor *hudColor;
 @property (strong, nonatomic) UIColor *spinnerColor;
 @property (strong, nonatomic) UIColor *borderColor;
 @property (assign, nonatomic) CGFloat borderWidth;
-
 @property (assign, nonatomic) CGFloat hudAlpha;
 @property (assign, nonatomic) CGFloat shadowAlpha;
 

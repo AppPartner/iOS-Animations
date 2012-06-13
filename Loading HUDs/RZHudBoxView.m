@@ -10,9 +10,13 @@
 
 #import "RZHudBoxView.h"
 
-#define kDefaultHUDSizeIpad CGSizeMake(140, 120)
-#define kMaxWidthIpad       280
-#define kLabelPadding       20
+#define kDefaultWidth       140
+#define kDefaultHeight      110
+
+#define kMinDimensionIpad   22
+
+#define kOuterPadding       15
+#define kElementPadding     10
 
 #define kLayoutAnimationTime 0.2
 
@@ -22,28 +26,33 @@
 @property (nonatomic, strong) UILabel *messageLabel;
 
 - (UIBezierPath*)boxMaskPathForRect:(CGRect)rect;
-- (void)layoutBoxForMessageLabelWithMessage:(NSString*)message animated:(BOOL)animated;
+- (void)updateLayoutAnimated:(BOOL)animated;
 - (void)animateBoxShadowToRect:(CGRect)rect duration:(NSTimeInterval)duration;
-- (void)layoutSpinnerForMessage:(BOOL)hasMessage animated:(BOOL)animated;
 
 @end
 
 @implementation RZHudBoxView
 
+@synthesize customView = _customView;
+@synthesize style = _style;
 @synthesize color = _color;
 @synthesize cornerRadius = _cornerRadius;
 @synthesize borderColor = _borderColor;
 @synthesize borderWidth = _borderWidth;
 
+@synthesize labelText = _labelText;
+
 @synthesize activitySpinner = _activitySpinner;
 @synthesize messageLabel = _messageLabel;
 
-- (id)initWithColor:(UIColor *)color cornerRadius:(CGFloat)cornerRadius
+- (id)initWithStyle:(RZHudBoxStyle)style color:(UIColor*)color cornerRadius:(CGFloat)cornerRadius;
 {
-    if (self = [super initWithFrame:(CGRect){CGPointZero, kDefaultHUDSizeIpad}])
+    if (self = [super initWithFrame:CGRectMake(0, 0, kDefaultWidth, kDefaultHeight)])
     {
         self.backgroundColor = [UIColor clearColor];
         self.clipsToBounds = NO;
+        
+        self.style = style;
         self.color = color;
         self.cornerRadius = cornerRadius;
         self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
@@ -54,13 +63,6 @@
         self.messageLabel.textAlignment = UITextAlignmentCenter;
         self.messageLabel.font = [UIFont systemFontOfSize:18];
         self.messageLabel.shadowColor = [UIColor clearColor];
-        
-        self.activitySpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        self.activitySpinner.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
-        self.activitySpinner.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
-        self.activitySpinner.hidesWhenStopped = NO;
-        [self addSubview:self.activitySpinner];
-        
         
         self.layer.masksToBounds = NO;
         self.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -73,7 +75,88 @@
 
 - (void)layoutSubviews
 {
-    self.layer.shadowPath = [self boxMaskPathForRect:self.bounds].CGPath;
+    [self updateLayoutAnimated:NO];
+    // update shadow path
+}
+
+- (void)updateLayoutAnimated:(BOOL)animated
+{
+    CGSize labelSize = CGSizeZero;
+    if (self.labelText.length)
+        labelSize = [self.labelText sizeWithFont:self.labelFont];
+    
+    CGFloat newWidth = MAX(labelSize.width + 2*kOuterPadding, kMinDimensionIpad);
+    if (self.customView){
+        newWidth += self.customView.bounds.size.width + kElementPadding;
+    }
+    
+    CGFloat newHeight = MAX(self.customView.bounds.size.height, labelSize.height + self.activitySpinner.bounds.size.height + kElementPadding);
+    newHeight = MAX(newHeight + 2*kOuterPadding, kMinDimensionIpad);
+    
+    CGRect oldFrame = self.frame;
+    CGRect newFrame = self.frame;
+    newFrame.size.width = newWidth;
+    newFrame.size.height = newHeight;
+    newFrame.origin.x += (oldFrame.size.width - newWidth)/2.0;
+    newFrame.origin.y += (oldFrame.size.height - newHeight)/2.0;
+    
+    CGRect customViewFrame = CGRectZero;
+    if (self.customView){
+        CGFloat originY = (newFrame.size.height - self.customView.bounds.size.height)/2;
+        customViewFrame = CGRectMake(kOuterPadding, originY, self.customView.bounds.size.width, self.customView.bounds.size.height);
+    }
+    
+    CGRect newMessageFrame = (CGRect){CGPointZero, labelSize};
+    newMessageFrame.origin.x = self.customView ? CGRectGetMaxX(self.customView.frame) + kElementPadding : kOuterPadding;
+    newMessageFrame.origin.y = self.activitySpinner ? newFrame.size.height - kOuterPadding - labelSize.height : (newFrame.size.height - newMessageFrame.size.height)/2;
+    
+    CGPoint activityCenter = CGPointZero;
+    if (self.activitySpinner){
+        if (self.labelText.length){
+            activityCenter = CGPointMake(newMessageFrame.origin.x + newMessageFrame.size.width/2, newMessageFrame.origin.y - kElementPadding - self.activitySpinner.bounds.size.height/2);
+        }
+        else{
+            activityCenter = CGPointMake(self.bounds.size.width/2, self.bounds.size.width/2);
+        }
+    }
+    
+    if (animated){
+        [UIView animateWithDuration:kLayoutAnimationTime
+                         animations:^{
+                             self.frame = newFrame;
+                             self.customView.frame = customViewFrame;
+                             self.messageLabel.frame = newMessageFrame;
+                             self.activitySpinner.center = activityCenter;
+                         }];
+        
+        [UIView transitionWithView:self.messageLabel
+                          duration:kLayoutAnimationTime
+                           options:UIViewAnimationOptionTransitionCrossDissolve
+                        animations:^{
+                            self.messageLabel.text = self.labelText;
+                        } 
+                        completion:NULL
+         ];
+        
+        [self animateBoxShadowToRect:(CGRect){CGPointZero, newFrame.size} duration:kLayoutAnimationTime];
+    }
+    else{
+        self.frame = newFrame;
+        self.customView.frame = customViewFrame;
+        self.messageLabel.frame = newMessageFrame;
+        self.activitySpinner.center = activityCenter;
+        
+        self.messageLabel.text = self.labelText;
+        self.layer.shadowPath = [self boxMaskPathForRect:(CGRect){CGPointZero, newFrame.size}].CGPath;
+    }
+    
+    if (self.labelText.length != 0 && !self.messageLabel.superview){
+        [self addSubview:self.messageLabel];
+    }
+    
+    if (self.labelText.length == 0 && self.messageLabel.superview){
+        [self.messageLabel removeFromSuperview];
+    }
 }
 
 - (void)drawRect:(CGRect)rect
@@ -88,47 +171,6 @@
     CGContextSetLineWidth(ctx, self.borderWidth);
     CGContextAddPath(ctx, outlinePath.CGPath);
     CGContextDrawPath(ctx, kCGPathFillStroke);
-}
-
-- (void)layoutBoxForMessageLabelWithMessage:(NSString*)message animated:(BOOL)animated
-{
-    
-    CGSize labelSize = [message sizeWithFont:self.labelFont constrainedToSize:CGSizeMake(kMaxWidthIpad - 2*kLabelPadding, 50000)];
-
-    CGRect theframe = self.frame;
-    CGFloat newWidth = labelSize.width + 2.0*kLabelPadding;
-    CGFloat oldWidth = theframe.size.width;
-    theframe.size.width = newWidth;
-    theframe.origin.x -= (newWidth - oldWidth)/2.0;
-    
-    CGRect newMessageFrame = (CGRect){CGPointZero, labelSize};
-    newMessageFrame.origin.x = kLabelPadding;
-    newMessageFrame.origin.y = (theframe.size.height*3/4) - labelSize.height/2;
-    
-    if (animated)
-    {
-        [UIView animateWithDuration:kLayoutAnimationTime
-                         animations:^{
-                             self.frame = theframe;
-                             self.messageLabel.frame = newMessageFrame;
-                         }];
-        [UIView transitionWithView:self.messageLabel
-                          duration:kLayoutAnimationTime
-                           options:UIViewAnimationOptionTransitionCrossDissolve
-                        animations:^{
-                            self.messageLabel.text = message;
-                        } 
-                        completion:NULL
-         ];
-        
-        [self animateBoxShadowToRect:(CGRect){CGPointZero, theframe.size} duration:0.2];
-    }
-    else
-    {
-        self.frame = theframe;
-        self.messageLabel.frame = newMessageFrame;
-        self.messageLabel.text = message;
-    }
 }
 
 - (void)animateBoxShadowToRect:(CGRect)rect duration:(NSTimeInterval)duration
@@ -146,20 +188,6 @@
     [self.layer addAnimation:shadowAnim forKey:@"moveDatPath"];
 }
 
-- (void)layoutSpinnerForMessage:(BOOL)hasMessage animated:(BOOL)animated
-{
-    CGPoint spinCenter = CGPointMake(self.bounds.size.width/2, hasMessage ? self.bounds.size.height*2/5 : self.bounds.size.height/2);
-    
-    if (animated){
-        [UIView animateWithDuration:kLayoutAnimationTime
-                         animations:^{
-                             self.activitySpinner.center = spinCenter;
-                         }];
-    }
-    else {
-        self.activitySpinner.center = spinCenter;
-    }
-}
 
 - (UIBezierPath*)boxMaskPathForRect:(CGRect)rect
 {
@@ -173,33 +201,58 @@
 
 #pragma mark - Properties
 
-- (void)setActivityState:(BOOL)activity
+- (void)setCustomView:(UIView *)customView
 {
-    if (activity)
-        [self.activitySpinner startAnimating];
-    else
-        [self.activitySpinner stopAnimating];
+    if (customView && self.style != RZHudBoxStyleInfo){
+        NSLog(@"Warning: Custom HUD view only valid for style RZHudStyleInfo");
+        return;
+    }
+    
+    if (customView && self.superview){
+        NSLog(@"Warning: Cannot change HUD custom image while presented!");
+        return;
+    }
+    
+    if (_customView){
+        [_customView removeFromSuperview];
+        self.customView = nil;
+    }
+    _customView = customView;
+    if (customView){
+        customView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
+        [self addSubview:_customView];
+    }
+    [self updateLayoutAnimated:NO];
 }
 
-- (NSString*)labelText
+- (void)setStyle:(RZHudBoxStyle)style
 {
-    return self.messageLabel.text;
+    if (self.superview){
+        NSLog(@"Warning: Cannot change HUD style while presented!");
+        return;
+    }
+    _style = style;
+    if (style == RZHudBoxStyleLoading){
+        self.activitySpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        self.activitySpinner.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+        self.activitySpinner.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+        self.activitySpinner.hidesWhenStopped = NO;
+        [self addSubview:self.activitySpinner];
+        [self.activitySpinner startAnimating];
+    }
+    else{
+        [self.activitySpinner removeFromSuperview];
+        self.activitySpinner = nil;
+    }
+    [self setNeedsLayout];
 }
+
 
 - (void)setLabelText:(NSString *)labelText
 {    
+    _labelText = [labelText copy];
     
-    if (labelText.length != 0 && !self.messageLabel.superview){
-        [self addSubview:self.messageLabel];
-    }
-    
-    if (labelText.length == 0 && self.messageLabel.superview){
-        [self.messageLabel removeFromSuperview];
-    }
-    
-    BOOL shouldAnimate = (self.messageLabel.superview && self.superview);
-    [self layoutBoxForMessageLabelWithMessage:labelText animated:shouldAnimate];
-    [self layoutSpinnerForMessage:labelText.length animated:shouldAnimate];
+    [self updateLayoutAnimated:(self.superview != nil)];
 }
 
 - (UIColor*)labelColor
@@ -220,7 +273,7 @@
 - (void)setLabelFont:(UIFont *)labelFont
 {
     self.messageLabel.font = labelFont;
-    [self layoutBoxForMessageLabelWithMessage:self.labelText animated:(self.messageLabel.superview && self.superview)];
+    [self updateLayoutAnimated:(self.superview && self.messageLabel.superview)];
 }
 
 - (UIColor*)spinnerColor
