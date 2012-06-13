@@ -21,6 +21,7 @@
 
 @interface RZHud ()
 
+@property (assign, nonatomic) RZHudStyle hudStyle;
 @property (strong, nonatomic) UIView *hudContainerView;
 @property (strong, nonatomic) UIView *shadowView;
 @property (strong, nonatomic) RZCircleView *circleView;
@@ -84,25 +85,19 @@
 
 - (id)init
 {
-  return  [self initWithStyle:RZHudStyleBoxLoading
-                 overlayColor:[UIColor clearColor]
-                     hudColor:[UIColor blackColor]
-                 spinnerColor:[UIColor whiteColor]];
+    return [self initWithStyle:RZHudStyleBoxLoading];
 }
 
-- (id)initWithStyle:(RZHudStyle)style 
-       overlayColor:(UIColor *)overlayColor 
-           hudColor:(UIColor *)hudColor 
-       spinnerColor:(UIColor *)spinnerColor
+- (id)initWithStyle:(RZHudStyle)style
 {
     
     if (self = [super initWithFrame:CGRectMake(0, 0, 768, 1024)]){
         
         self.usingFold = NO;
         self.hudStyle = style;
-        self.overlayColor = overlayColor;
-        self.hudColor = hudColor;
-        self.spinnerColor = spinnerColor;
+        self.overlayColor = [UIColor clearColor];
+        self.hudColor = [UIColor blackColor];
+        self.spinnerColor = [UIColor whiteColor];
         self.borderColor = nil;
         self.borderWidth = 0;
         self.hudAlpha = 0.95;

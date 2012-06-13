@@ -20,10 +20,6 @@ typedef enum {
 
 @interface RZHud : UIView <CPFlipperDelegate>
 
-/// @name Hud Style Properties
-/// This should only be set prior to showing the hud
-@property (assign, nonatomic) RZHudStyle hudStyle;
-
 /// @name Style properties
 @property (strong, nonatomic) UIView  *customView;
 @property (strong, nonatomic) UIColor *overlayColor;
@@ -43,11 +39,7 @@ typedef enum {
 @property (strong, nonatomic) UIFont* labelFont;
 @property (strong, nonatomic) NSString* labelText;
 
-- (id)initWithStyle:(RZHudStyle)style
-       overlayColor:(UIColor*)overlayColor
-           hudColor:(UIColor*)hudColor
-       spinnerColor:(UIColor*)spinnerColor;
-
+- (id)initWithStyle:(RZHudStyle)style;
 - (void)presentInView:(UIView*)view withFold:(BOOL)fold;
 - (void)presentInView:(UIView *)view withFold:(BOOL)fold afterDelay:(NSTimeInterval)delay;
 - (void)dismiss;
