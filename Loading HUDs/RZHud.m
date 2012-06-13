@@ -1,12 +1,12 @@
 //
-//  RZLoadingHUD.m
+//  RZHud.m
 //  Raizlabs
 //
 //  Created by Nick Donaldson on 5/21/12.
 //  Copyright (c) 2012 Raizlabs Corporation. All rights reserved.
 //
 
-#import "RZLoadingHUD.h"
+#import "RZHud.h"
 #import "RZCircleView.h"
 #import "RZHudBoxView.h"
 #import "UIView+Utils.h"
@@ -19,7 +19,7 @@
 #define kDefaultOverlayTime         0.25
 #define kPopupMultiplier            1.2
 
-@interface RZLoadingHUD ()
+@interface RZHud ()
 
 @property (strong, nonatomic) UIView *hudContainerView;
 @property (strong, nonatomic) UIView *shadowView;
@@ -48,7 +48,7 @@
 
 @end
 
-@implementation RZLoadingHUD
+@implementation RZHud
 
 @synthesize hudStyle = _hudStyle;
 

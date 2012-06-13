@@ -1,5 +1,5 @@
 //
-//  RZLoadingHUD.h
+//  RZHud.h
 //  Raizlabs
 //
 //  Created by Nick Donaldson on 5/21/12.
@@ -18,7 +18,7 @@ typedef enum {
     RZHudStyleOverlay
 } RZHudStyle;
 
-@interface RZLoadingHUD : UIView <CPFlipperDelegate>
+@interface RZHud : UIView <CPFlipperDelegate>
 
 /// @name Hud Style Properties
 /// This should only be set prior to showing the hud
