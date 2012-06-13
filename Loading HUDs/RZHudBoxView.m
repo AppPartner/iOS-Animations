@@ -12,14 +12,15 @@
 
 #define kDefaultHUDSizeIpad CGSizeMake(140, 120)
 #define kMaxWidthIpad       280
-#define kLabelPadding       15
+#define kLabelPadding       20
 
 @interface RZHudBoxView ()
 
 @property (nonatomic, strong) UILabel *messageLabel;
 
-- (UIBezierPath*)boxMaskPath;
+- (UIBezierPath*)boxMaskPathForRect:(CGRect)rect;
 - (void)layoutBoxForMessageLabelWithMessage:(NSString*)message animated:(BOOL)animated;
+- (void)animateBoxShadowToRect:(CGRect)rect duration:(NSTimeInterval)duration;
 
 @end
 
@@ -51,16 +52,16 @@
         
         self.layer.masksToBounds = NO;
         self.layer.shadowColor = [UIColor blackColor].CGColor;
-        self.layer.shadowRadius = 2.0;
+        self.layer.shadowRadius = 3.0;
         self.layer.shadowOffset = CGSizeMake(0, 1);
-        self.layer.shadowOpacity = 0.15;
+        self.layer.shadowOpacity = 0.2;
     }
     return self;
 }
 
 - (void)layoutSubviews
 {
-    self.layer.shadowPath = [self boxMaskPath].CGPath;
+    self.layer.shadowPath = [self boxMaskPathForRect:self.bounds].CGPath;
 }
 
 - (void)drawRect:(CGRect)rect
@@ -68,7 +69,7 @@
     CGContextRef ctx = UIGraphicsGetCurrentContext();
     
     // outline path
-    UIBezierPath *outlinePath = [self boxMaskPath];
+    UIBezierPath *outlinePath = [self boxMaskPathForRect:self.bounds];
     
     CGContextSetFillColorWithColor(ctx, self.color.CGColor);
     CGContextSetStrokeColorWithColor(ctx, self.borderColor ? self.borderColor.CGColor : [UIColor clearColor].CGColor);
@@ -108,7 +109,8 @@
                         } 
                         completion:NULL
          ];
-
+        
+        [self animateBoxShadowToRect:(CGRect){CGPointZero, theframe.size} duration:0.2];
     }
     else
     {
@@ -118,10 +120,25 @@
     }
 }
 
-- (UIBezierPath*)boxMaskPath
+- (void)animateBoxShadowToRect:(CGRect)rect duration:(NSTimeInterval)duration
+{
+    UIBezierPath *shadowPath = [self boxMaskPathForRect:rect];
+    
+    CABasicAnimation *shadowAnim = [CABasicAnimation animationWithKeyPath:@"shadowPath"];
+    shadowAnim.fromValue = (__bridge id)self.layer.shadowPath;
+    shadowAnim.toValue = (__bridge id)[shadowPath CGPath];
+    shadowAnim.duration = duration;
+    shadowAnim.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    shadowAnim.fillMode = kCAFillModeBoth;
+    
+    self.layer.shadowPath = shadowPath.CGPath;
+    [self.layer addAnimation:shadowAnim forKey:@"moveDatPath"];
+}
+
+- (UIBezierPath*)boxMaskPathForRect:(CGRect)rect
 {
     // outline path
-    CGRect insetBounds = CGRectInset(self.bounds, self.borderWidth/2, self.borderWidth/2);
+    CGRect insetBounds = CGRectInset(rect, self.borderWidth/2, self.borderWidth/2);
     if (self.cornerRadius > 0.0)
         return [UIBezierPath bezierPathWithRoundedRect:insetBounds cornerRadius:self.cornerRadius];
     else
