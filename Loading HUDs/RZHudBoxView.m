@@ -14,13 +14,17 @@
 #define kMaxWidthIpad       280
 #define kLabelPadding       20
 
+#define kLayoutAnimationTime 0.2
+
 @interface RZHudBoxView ()
 
+@property (nonatomic, strong) UIActivityIndicatorView *activitySpinner;
 @property (nonatomic, strong) UILabel *messageLabel;
 
 - (UIBezierPath*)boxMaskPathForRect:(CGRect)rect;
 - (void)layoutBoxForMessageLabelWithMessage:(NSString*)message animated:(BOOL)animated;
 - (void)animateBoxShadowToRect:(CGRect)rect duration:(NSTimeInterval)duration;
+- (void)layoutSpinnerForMessage:(BOOL)hasMessage animated:(BOOL)animated;
 
 @end
 
@@ -31,6 +35,7 @@
 @synthesize borderColor = _borderColor;
 @synthesize borderWidth = _borderWidth;
 
+@synthesize activitySpinner = _activitySpinner;
 @synthesize messageLabel = _messageLabel;
 
 - (id)initWithColor:(UIColor *)color cornerRadius:(CGFloat)cornerRadius
@@ -49,6 +54,13 @@
         self.messageLabel.textAlignment = UITextAlignmentCenter;
         self.messageLabel.font = [UIFont systemFontOfSize:18];
         self.messageLabel.shadowColor = [UIColor clearColor];
+        
+        self.activitySpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        self.activitySpinner.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
+        self.activitySpinner.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin;
+        self.activitySpinner.hidesWhenStopped = NO;
+        [self addSubview:self.activitySpinner];
+        
         
         self.layer.masksToBounds = NO;
         self.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -83,7 +95,6 @@
     
     CGSize labelSize = [message sizeWithFont:self.labelFont constrainedToSize:CGSizeMake(kMaxWidthIpad - 2*kLabelPadding, 50000)];
 
-    
     CGRect theframe = self.frame;
     CGFloat newWidth = labelSize.width + 2.0*kLabelPadding;
     CGFloat oldWidth = theframe.size.width;
@@ -96,13 +107,13 @@
     
     if (animated)
     {
-        [UIView animateWithDuration:0.2
+        [UIView animateWithDuration:kLayoutAnimationTime
                          animations:^{
                              self.frame = theframe;
                              self.messageLabel.frame = newMessageFrame;
                          }];
         [UIView transitionWithView:self.messageLabel
-                          duration:0.2
+                          duration:kLayoutAnimationTime
                            options:UIViewAnimationOptionTransitionCrossDissolve
                         animations:^{
                             self.messageLabel.text = message;
@@ -135,6 +146,21 @@
     [self.layer addAnimation:shadowAnim forKey:@"moveDatPath"];
 }
 
+- (void)layoutSpinnerForMessage:(BOOL)hasMessage animated:(BOOL)animated
+{
+    CGPoint spinCenter = CGPointMake(self.bounds.size.width/2, hasMessage ? self.bounds.size.height*2/5 : self.bounds.size.height/2);
+    
+    if (animated){
+        [UIView animateWithDuration:kLayoutAnimationTime
+                         animations:^{
+                             self.activitySpinner.center = spinCenter;
+                         }];
+    }
+    else {
+        self.activitySpinner.center = spinCenter;
+    }
+}
+
 - (UIBezierPath*)boxMaskPathForRect:(CGRect)rect
 {
     // outline path
@@ -146,6 +172,14 @@
 }
 
 #pragma mark - Properties
+
+- (void)setActivityState:(BOOL)activity
+{
+    if (activity)
+        [self.activitySpinner startAnimating];
+    else
+        [self.activitySpinner stopAnimating];
+}
 
 - (NSString*)labelText
 {
@@ -163,8 +197,9 @@
         [self.messageLabel removeFromSuperview];
     }
     
-    [self layoutBoxForMessageLabelWithMessage:labelText animated:(self.messageLabel.superview && self.superview)];
-    
+    BOOL shouldAnimate = (self.messageLabel.superview && self.superview);
+    [self layoutBoxForMessageLabelWithMessage:labelText animated:shouldAnimate];
+    [self layoutSpinnerForMessage:labelText.length animated:shouldAnimate];
 }
 
 - (UIColor*)labelColor
@@ -186,6 +221,16 @@
 {
     self.messageLabel.font = labelFont;
     [self layoutBoxForMessageLabelWithMessage:self.labelText animated:(self.messageLabel.superview && self.superview)];
+}
+
+- (UIColor*)spinnerColor
+{
+    return self.activitySpinner.color;
+}
+
+- (void)setSpinnerColor:(UIColor *)spinnerColor
+{
+    self.activitySpinner.color = spinnerColor;
 }
 
 @end

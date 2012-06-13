@@ -104,7 +104,7 @@
         self.spinnerColor = spinnerColor;
         self.borderColor = nil;
         self.borderWidth = 0;
-        self.hudAlpha = 0.9;
+        self.hudAlpha = 0.95;
         self.shadowAlpha = 0.15;
         self.circleRadius = 40.0;
         self.cornerRadius = 16.0;
@@ -173,9 +173,6 @@
         return;
     }
     
-    if (self.hudStyle != RZHudStyleOverlay)
-        [self.spinnerView stopAnimating];
-    
     if (self.hudStyle == RZHudStyleCircle){
         [self popOutCircle:NO];
     }
@@ -222,19 +219,8 @@
         self.hudBoxView.labelText = self.labelText;
         self.hudBoxView.labelColor = self.labelColor;
         self.hudBoxView.labelFont = self.labelFont;
-        
-        // add spinner view to center of box view
-        self.spinnerView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-        self.spinnerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        self.spinnerView.hidesWhenStopped = YES;
-        self.spinnerView.color = self.spinnerColor;
-        self.spinnerView.backgroundColor = [UIColor clearColor];
-        if (self.labelText)
-            self.spinnerView.center = CGPointMake(self.hudBoxView.bounds.size.width/2,self.hudBoxView.bounds.size.height*2/5);
-        else
-            self.spinnerView.center = CGPointMake(self.hudBoxView.bounds.size.width/2,self.hudBoxView.bounds.size.height/2);
-        [self.hudBoxView addSubview:self.spinnerView];
-        
+        self.hudBoxView.spinnerColor = self.spinnerColor;
+        [self.hudBoxView setActivityState:YES];
     }
     else if (self.hudStyle == RZHudStyleCircle)
     {
@@ -320,7 +306,6 @@
             hudView.alpha = 0.0;
             [self addSubview:hudView];
         }
-        
         [UIView animateWithDuration:kDefaultOverlayTime
                          animations:^{
                              hudView.alpha = self.hudAlpha;
@@ -336,7 +321,7 @@
                                      [self dismiss];
                                  }
                                  else{
-                                     [self.spinnerView startAnimating];
+                                     [self.hudBoxView setActivityState:YES];
                                  }
                              }
                              else{
@@ -375,6 +360,9 @@
                               }];
     }
     else{
+        
+        [self.spinnerView stopAnimating];
+        
         CGFloat newRadius = roundf(self.circleRadius / kPopupMultiplier);
         
         [self animateCircleShadowToPath:[self shadowPathForRadius:newRadius raisedState:NO].CGPath

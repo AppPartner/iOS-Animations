@@ -19,6 +19,9 @@
 @property (nonatomic, assign) UIColor *labelColor;
 @property (nonatomic, assign) UIFont *labelFont;
 
+@property (nonatomic, assign) UIColor *spinnerColor;
+
 - (id)initWithColor:(UIColor*)color cornerRadius:(CGFloat)cornerRadius;
+- (void)setActivityState:(BOOL)activity;
 
 @end
