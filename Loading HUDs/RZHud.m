@@ -226,6 +226,7 @@
         self.hudContainerView = [[UIView alloc] initWithFrame:CGRectIntegral(CGRectMake(0, 0, self.circleRadius*2.5, self.circleRadius*2.5))];
         self.hudContainerView.backgroundColor = [UIColor clearColor];
         self.hudContainerView.clipsToBounds = NO;
+        self.hudContainerView.opaque = NO;
         self.hudContainerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
         
         // setup hud view and mask

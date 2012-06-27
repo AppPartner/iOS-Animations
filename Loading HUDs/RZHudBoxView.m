@@ -51,6 +51,7 @@
     {
         self.backgroundColor = [UIColor clearColor];
         self.clipsToBounds = NO;
+        self.opaque = NO;
         
         self.style = style;
         self.color = color;

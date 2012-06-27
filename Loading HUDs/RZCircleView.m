@@ -27,6 +27,7 @@ typedef void (^RadiusAnimCompletion)();
 - (id)initWithRadius:(CGFloat)radius color:(UIColor *)color{
     if (self = [super initWithFrame:CGRectMake(0, 0, radius*2, radius*2)]){
         self.backgroundColor = [UIColor clearColor];
+        self.opaque = NO;
         self.clipsToBounds = NO;
         self.layer.masksToBounds = NO;
         
