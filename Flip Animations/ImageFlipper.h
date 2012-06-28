@@ -38,4 +38,8 @@ extern CGFloat const kFlipperMaxGradientOpacity;
 -(void) flipBack;
 -(void) flipBackWithDelay:(CFTimeInterval)delay;
 -(void) flipBackWithDelay:(CFTimeInterval)delay duration:(CFTimeInterval)duration;
+
+-(UIImage*)originalImage;
+-(UIImage*)targetImage;
+
 @end
