@@ -44,7 +44,7 @@ float normalize(float input, float min, float max){
 @property (assign, nonatomic) CPFFlipState targetState;
 @property (assign, nonatomic) CGFloat percentOpen;
 
-- (CGPathRef)buildShadowPathFromRect:(CGRect)rect;
+- (CGPathRef)newShadowPathFromRect:(CGRect)rect;
 
 @end
 
@@ -85,12 +85,14 @@ float normalize(float input, float min, float max){
         self.backgroundColor = [UIColor clearColor];
         
         // init layer
+        CGPathRef shadowPath = CGPathCreateWithRect(self.bounds, NULL);
         self.layer.masksToBounds = NO;
         self.layer.shadowColor = [UIColor blackColor].CGColor;
         self.layer.shadowOpacity = state == kCPF_Closed ? 0.0 : kCPFDropShadowMaxOpacity;
         self.layer.shadowRadius = kCPFDropShadowRadius;
         self.layer.shadowOffset = CGSizeMake(0, 0);
-        self.layer.shadowPath = CGPathCreateWithRect(self.bounds, NULL);
+        self.layer.shadowPath = shadowPath;
+        CGPathRelease(shadowPath);
         
         self.originalImage = originalImage;
         self.targetImage = targetImage;
@@ -316,8 +318,9 @@ float normalize(float input, float min, float max){
         // constrain to bounds
         if (shadowRect.size.width > self.bounds.size.width)
             shadowRect.size.width = self.bounds.size.width;
-        
-        self.layer.shadowPath = [self buildShadowPathFromRect:shadowRect];
+        CGPathRef shadowPath = [self newShadowPathFromRect:shadowRect];
+        self.layer.shadowPath = shadowPath;
+        CGPathRelease(shadowPath);
     }
     
     // this gets updated a LOT so shortening the anim duration
@@ -421,7 +424,7 @@ float normalize(float input, float min, float max){
             
             CAMediaTimingFunction *shadowTiming = [CAMediaTimingFunction functionWithControlPoints:0.71 :0.0 :1.0 :0.29];
             CGRect shadowTargetRect = self.opensFromRight ? CGRectMake(self.bounds.size.width/2.0f, 0, self.bounds.size.width/2.0f, self.bounds.size.height) : CGRectMake(0, 0, self.bounds.size.width/2.0f, self.bounds.size.height);
-            CGPathRef shadowTargetPath = [self buildShadowPathFromRect:shadowTargetRect];
+            CGPathRef shadowTargetPath = [self newShadowPathFromRect:shadowTargetRect];
             
             
             CABasicAnimation *dropShadowPath = [CABasicAnimation animation];
@@ -446,7 +449,7 @@ float normalize(float input, float min, float max){
             
             [self.layer addAnimation:dropShadowPath forKey:@"shadowPath"];
             [self.layer addAnimation:dropShadowAlpha forKey:@"shadowOpacity"];
-
+            CGPathRelease(shadowTargetPath);
             
             
             // then animate the rest of the way to closed
@@ -540,7 +543,7 @@ float normalize(float input, float min, float max){
             
             CAMediaTimingFunction *shadowTiming = [CAMediaTimingFunction functionWithControlPoints:0.0 :0.71 :0.29 :1.0];
             CGRect shadowSourceRect = self.opensFromRight ? CGRectMake(self.bounds.size.width/2.0f, 0, self.bounds.size.width/2.0f, self.bounds.size.height) : CGRectMake(0, 0, self.bounds.size.width/2.0f, self.bounds.size.height);
-            CGPathRef shadowSourcePath = [self buildShadowPathFromRect:shadowSourceRect];
+            CGPathRef shadowSourcePath = [self newShadowPathFromRect:shadowSourceRect];
             
             
             if (self.opensFromRight){
@@ -570,16 +573,17 @@ float normalize(float input, float min, float max){
                 [self.leftFlipPageGradientLayer addAnimation:leftSidePageGrad forKey:@"leftGradOpacity"];
             }
 
-            
+            CGPathRef shadowPath = [self newShadowPathFromRect:self.bounds];
             CABasicAnimation *dropShadowPath = [CABasicAnimation animation];
             dropShadowPath.beginTime = CACurrentMediaTime() + timeToCenter;
             dropShadowPath.duration = timeCenterToTarget;
             dropShadowPath.timingFunction = shadowTiming;
             dropShadowPath.fromValue = (__bridge id)shadowSourcePath;
-            dropShadowPath.toValue = (__bridge id)[self buildShadowPathFromRect:self.bounds];
+            dropShadowPath.toValue = (__bridge id)shadowPath;
             dropShadowPath.keyPath = @"shadowPath";
             dropShadowPath.fillMode = kCAFillModeForwards;
             dropShadowPath.removedOnCompletion = NO;
+            CGPathRelease(shadowPath);
             
             CABasicAnimation *dropShadowAlpha = [CABasicAnimation animation];
             dropShadowAlpha.beginTime = CACurrentMediaTime() + timeToCenter;
@@ -591,10 +595,13 @@ float normalize(float input, float min, float max){
             dropShadowAlpha.fillMode = kCAFillModeForwards;
             dropShadowAlpha.removedOnCompletion = NO;
             
-            self.layer.shadowPath = [self buildShadowPathFromRect:self.bounds];          
+            CGPathRef layerShadowPath = [self newShadowPathFromRect:self.bounds];
+            self.layer.shadowPath = layerShadowPath;
             self.layer.shadowOpacity = 0.0;
             [self.layer addAnimation:dropShadowPath forKey:@"shadowPath"];
             [self.layer addAnimation:dropShadowAlpha forKey:@"shadowOpacity"];
+            CGPathRelease(layerShadowPath);
+            CGPathRelease(shadowSourcePath);
         }
     }
     else{
@@ -676,14 +683,15 @@ float normalize(float input, float min, float max){
                 [self.leftFlipPageGradientLayer addAnimation:leftSidePageGrad forKey:@"leftGradOpacity"];
             }
             
-            
+            CGPathRef shadowPath = [self newShadowPathFromRect:self.bounds];
             CABasicAnimation *dropShadowPath = [CABasicAnimation animation];
             dropShadowPath.duration = duration;
             dropShadowPath.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
             dropShadowPath.fromValue = (__bridge id)self.layer.shadowPath;
-            dropShadowPath.toValue = (__bridge id)[self buildShadowPathFromRect:self.bounds];
+            dropShadowPath.toValue = (__bridge id)shadowPath;
             dropShadowPath.fillMode = kCAFillModeForwards;
             dropShadowPath.keyPath = @"shadowPath";
+            CGPathRelease(shadowPath);
             
             CABasicAnimation *dropShadowAlpha = [CABasicAnimation animation];
             dropShadowAlpha.duration = duration;
@@ -693,20 +701,24 @@ float normalize(float input, float min, float max){
             dropShadowAlpha.fillMode = kCAFillModeForwards;
             dropShadowAlpha.keyPath = @"shadowOpacity";
             
-            self.layer.shadowPath = [self buildShadowPathFromRect:self.bounds];
+            CGPathRef layerShadowPath = [self newShadowPathFromRect:self.bounds]; 
+            self.layer.shadowPath = layerShadowPath;
             self.layer.shadowOpacity = kCPFDropShadowMaxOpacity;
             [self.layer addAnimation:dropShadowPath forKey:@"shadowPath"];
             [self.layer addAnimation:dropShadowAlpha forKey:@"shadowOpacity"];
+            CGPathRelease(layerShadowPath);
         }
     }
 }
 
 - (void)setShadowMask:(NSInteger)shadowMask{
     _shadowMask = shadowMask;
-    self.layer.shadowPath = [self buildShadowPathFromRect:self.bounds];
+    CGPathRef shadowPath = [self newShadowPathFromRect:self.bounds];
+    self.layer.shadowPath =  shadowPath;
+    CGPathRelease(shadowPath);
 }
 
-- (CGPathRef)buildShadowPathFromRect:(CGRect)rect{
+- (CGPathRef)newShadowPathFromRect:(CGRect)rect{
     
     if (self.shadowMask == kCPF_NoShadow){
         return CGPathCreateWithRect((CGRect){self.center, CGSizeZero}, NULL);
