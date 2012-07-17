@@ -11,6 +11,7 @@
 @interface UIView (Utils)
 
 - (UIImage *) imageByRenderingView;
+- (UIImage *) imageByRenderingViewWithRetina:(BOOL)allowRetina;
 + (CGRect)interpolateRectFrom:(CGRect)sourceRect to:(CGRect)destRect progress:(CGFloat)progress;
 
 @end

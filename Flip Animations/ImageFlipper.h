@@ -31,6 +31,8 @@ extern CGFloat const kFlipperMaxGradientOpacity;
 
 -(id) initWithOriginalImage:(UIImage*)originalImage targetImage:(UIImage*)targetImage delegate:(id<ImageFlipperDelegate>)delegate frame:(CGRect)frame pages:(NSInteger)nPages;
 
+-(id) initWithOriginalImage:(UIImage*)originalImage targetImage:(UIImage*)targetImage delegate:(id<ImageFlipperDelegate>)delegate frame:(CGRect)frame pages:(NSInteger)nPages allowRetina:(BOOL)allowRetina;
+
 -(void) flip;
 -(void) flipWithDelay:(CFTimeInterval)delay;
 -(void) flipWithDelay:(CFTimeInterval)delay duration:(CFTimeInterval)duration;

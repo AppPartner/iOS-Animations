@@ -11,11 +11,16 @@
 
 @implementation UIView (Utils)
 
-- (UIImage *) imageByRenderingView {
+- (UIImage *) imageByRenderingView
+{
+   return [self imageByRenderingViewWithRetina:YES];
+}
+
+- (UIImage *) imageByRenderingViewWithRetina:(BOOL)allowRetina {
 	CGFloat oldAlpha = self.alpha;
 	
 	self.alpha = 1;
-    if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)])
+    if ([[UIScreen mainScreen] respondsToSelector:@selector(scale)] && allowRetina)
         UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, [UIScreen mainScreen].scale);
     else    
         UIGraphicsBeginImageContext(self.bounds.size);

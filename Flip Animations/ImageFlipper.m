@@ -11,7 +11,7 @@
 
 NSString* const kRightAnimKey = @"rightAnim";
 NSString* const kLeftAnimKey  = @"leftAnim";
-CFTimeInterval const kFlipperDuration = 0.6;
+CFTimeInterval const kFlipperDuration = 0.5;
 CFTimeInterval const kFlipperPageSpacing = kFlipperDuration/4.0;
 CGFloat const kFlipperMaxShadowOpacity = 0.8;
 CGFloat const kFlipperMaxGradientOpacity = 0.25;
@@ -79,10 +79,15 @@ CGFloat const kFlipperMaxGradientOpacity = 0.25;
 
 -(id) initWithOriginalImage:(UIImage*)originalImage targetImage:(UIImage*)targetImage delegate:(id<ImageFlipperDelegate>)delegate frame:(CGRect)frame
 {
-    return [self initWithOriginalImage:originalImage targetImage:targetImage delegate:delegate frame:frame pages:1];
+    return [self initWithOriginalImage:originalImage targetImage:targetImage delegate:delegate frame:frame pages:1 allowRetina:YES];
 }
 
 -(id) initWithOriginalImage:(UIImage*)originalImage targetImage:(UIImage*)targetImage delegate:(id<ImageFlipperDelegate>)delegate frame:(CGRect)frame pages:(NSInteger)nPages
+{
+    return [self initWithOriginalImage:originalImage targetImage:targetImage delegate:delegate frame:frame pages:nPages allowRetina:YES];
+}
+
+-(id) initWithOriginalImage:(UIImage*)originalImage targetImage:(UIImage*)targetImage delegate:(id<ImageFlipperDelegate>)delegate frame:(CGRect)frame pages:(NSInteger)nPages allowRetina:(BOOL)allowRetina
 {
     self = [super initWithFrame:frame];
     
@@ -106,7 +111,7 @@ CGFloat const kFlipperMaxGradientOpacity = 0.25;
         
         [CATransaction setDisableActions:YES];
         
-        CGFloat imgScale = [[UIScreen mainScreen] respondsToSelector:@selector(scale)] ? [[UIScreen mainScreen] scale] : 1.0;
+        CGFloat imgScale = [[UIScreen mainScreen] respondsToSelector:@selector(scale)] && allowRetina ? [[UIScreen mainScreen] scale] : 1.0;
         
         // Setup Original Left Layer
         self.originalLeftLayer = [CALayer layer];
