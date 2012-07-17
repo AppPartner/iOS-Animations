@@ -86,6 +86,7 @@
         UIImage* fullHostImage = [self.backgroundView imageByRenderingView];
         CGImageRef partialHostImageRef = CGImageCreateWithImageInRect(fullHostImage.CGImage, frame);
         partialHostImage = [UIImage imageWithCGImage:partialHostImageRef];
+        CGImageRelease(partialHostImageRef);
     }
     else
     {
