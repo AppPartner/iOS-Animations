@@ -100,7 +100,7 @@
         self.spinnerColor = [UIColor whiteColor];
         self.borderColor = nil;
         self.borderWidth = 0;
-        self.hudAlpha = 0.95;
+        self.hudAlpha = 0.98;
         self.shadowAlpha = 0.15;
         self.circleRadius = 40.0;
         self.cornerRadius = 16.0;
@@ -120,7 +120,8 @@
     [self presentInView:view withFold:(BOOL)fold afterDelay:0.0];
 }
 
-- (void)presentInView:(UIView *)view withFold:(BOOL)fold afterDelay:(NSTimeInterval)delay{
+- (void)presentInView:(UIView *)view withFold:(BOOL)fold afterDelay:(NSTimeInterval)delay
+{
     
     if (self.superview) return;
     
