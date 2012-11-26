@@ -14,7 +14,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#define kDefaultFlipTime            0.15
+#define kDefaultFlipTime            0.25
 #define kDefaultSizeTime            0.15
 #define kDefaultOverlayTime         0.25
 #define kPopupMultiplier            1.2
@@ -229,8 +229,10 @@
         self.hudContainerView.clipsToBounds = NO;
         self.hudContainerView.opaque = NO;
         self.hudContainerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+        self.hudContainerView.alpha = self.hudAlpha;
         
         // setup hud view and mask
+        
         self.circleView = [[RZCircleView alloc] initWithRadius:initialRadius color:self.hudColor];
         self.circleView.borderWidth = self.borderWidth;
         self.circleView.borderColor = self.borderColor;
@@ -267,10 +269,13 @@
                                                                    fromState:open ? kCPF_Open : kCPF_Closed 
                                                                    fromRight:YES];
     self.pageFlipper.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
+    self.pageFlipper.alpha = self.hudAlpha;
     self.pageFlipper.delegate = self;
     self.pageFlipper.animationTime = kDefaultFlipTime;
     self.pageFlipper.shadowMask = kCPF_NoShadow;
-    [self.pageFlipper maskToCircleWithRadius:self.circleRadius];
+    
+    CGFloat initialRadius = roundf(self.circleRadius/kPopupMultiplier);
+    [self.pageFlipper maskToCircleWithRadius:initialRadius];
     self.pageFlipper.center = CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
 }
 
