@@ -57,11 +57,12 @@
         self.color = color;
         self.cornerRadius = cornerRadius;
         self.messageLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
+        self.messageLabel.numberOfLines = 0;
         self.messageLabel.backgroundColor = [UIColor clearColor];
         self.messageLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
         self.messageLabel.adjustsFontSizeToFitWidth = NO;
         self.messageLabel.lineBreakMode = UILineBreakModeTailTruncation;
-        self.messageLabel.textAlignment = UITextAlignmentCenter;
+        self.messageLabel.textAlignment = UITextAlignmentLeft;
         self.messageLabel.font = [UIFont systemFontOfSize:18];
         self.messageLabel.shadowColor = [UIColor clearColor];
         
@@ -83,8 +84,10 @@
 - (void)updateLayoutAnimated:(BOOL)animated
 {
     CGSize labelSize = CGSizeZero;
-    if (self.labelText.length)
-        labelSize = [self.labelText sizeWithFont:self.labelFont];
+    if (self.labelText.length){
+        CGFloat maxWidth = self.superview ? self.superview.bounds.size.width - 4*kOuterPadding : CGFLOAT_MAX;
+        labelSize = [self.labelText sizeWithFont:self.labelFont constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)];
+    }
     
     CGFloat newWidth = MAX(labelSize.width + 2*kOuterPadding, kMinDimensionIpad);
     if (self.customView){
