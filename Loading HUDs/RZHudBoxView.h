@@ -22,13 +22,13 @@ typedef enum {
 /// @name Appearance Properties
 @property (nonatomic, strong) UIView *customView;
 @property (nonatomic, assign) CGFloat cornerRadius;
-@property (nonatomic, assign) UIColor *color;
+@property (nonatomic, strong) UIColor *color;
 @property (nonatomic, assign) CGFloat borderWidth;
-@property (nonatomic, assign) UIColor *borderColor;
+@property (nonatomic, strong) UIColor *borderColor;
 @property (nonatomic, copy)   NSString *labelText;
-@property (nonatomic, assign) UIColor *labelColor;
-@property (nonatomic, assign) UIFont *labelFont;
-@property (nonatomic, assign) UIColor *spinnerColor;
+@property (nonatomic, strong) UIColor *labelColor;
+@property (nonatomic, strong) UIFont *labelFont;
+@property (nonatomic, strong) UIColor *spinnerColor;
 
 - (id)initWithStyle:(RZHudBoxStyle)style color:(UIColor*)color cornerRadius:(CGFloat)cornerRadius;
 

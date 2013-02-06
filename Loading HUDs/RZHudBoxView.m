@@ -61,8 +61,8 @@
         self.messageLabel.backgroundColor = [UIColor clearColor];
         self.messageLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
         self.messageLabel.adjustsFontSizeToFitWidth = NO;
-        self.messageLabel.lineBreakMode = UILineBreakModeTailTruncation;
-        self.messageLabel.textAlignment = UITextAlignmentLeft;
+        self.messageLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        self.messageLabel.textAlignment = NSTextAlignmentLeft;
         self.messageLabel.font = [UIFont systemFontOfSize:18];
         self.messageLabel.shadowColor = [UIColor clearColor];
         
