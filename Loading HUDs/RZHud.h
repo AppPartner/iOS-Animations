@@ -18,26 +18,26 @@ typedef enum {
     RZHudStyleOverlay
 } RZHudStyle;
 
-@interface RZHud : UIView <CPFlipperDelegate>
+@interface RZHud : UIView <CPFlipperDelegate, UIAppearance>
 
 /// @name Style properties
-@property (strong, nonatomic) UIView  *customView;
-@property (strong, nonatomic) UIColor *overlayColor;
-@property (strong, nonatomic) UIColor *hudColor;
-@property (strong, nonatomic) UIColor *spinnerColor;
-@property (strong, nonatomic) UIColor *borderColor;
-@property (assign, nonatomic) CGFloat borderWidth;
-@property (assign, nonatomic) CGFloat hudAlpha;
-@property (assign, nonatomic) CGFloat shadowAlpha;
+@property (strong, nonatomic) UIView  *customView   UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIColor *overlayColor UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIColor *hudColor     UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIColor *spinnerColor UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIColor *borderColor  UI_APPEARANCE_SELECTOR;
+@property (assign, nonatomic) CGFloat borderWidth   UI_APPEARANCE_SELECTOR;
+@property (assign, nonatomic) CGFloat hudAlpha      UI_APPEARANCE_SELECTOR;
+@property (assign, nonatomic) CGFloat shadowAlpha   UI_APPEARANCE_SELECTOR;
+
+// these apply to box hud style only
+@property (assign, nonatomic) CGFloat   cornerRadius    UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIColor   *labelColor     UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIFont    *labelFont      UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) NSString  *labelText;
 
 // these apply to circle hud style only
 @property (assign, nonatomic) CGFloat circleRadius;
-
-// these apply to box hud style only
-@property (assign, nonatomic) CGFloat cornerRadius;
-@property (strong, nonatomic) UIColor* labelColor;
-@property (strong, nonatomic) UIFont* labelFont;
-@property (strong, nonatomic) NSString* labelText;
 
 - (id)initWithStyle:(RZHudStyle)style;
 - (void)presentInView:(UIView*)view withFold:(BOOL)fold;

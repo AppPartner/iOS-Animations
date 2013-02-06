@@ -290,4 +290,10 @@
     self.activitySpinner.color = spinnerColor;
 }
 
+- (void)setShadowAlpha:(CGFloat)shadowAlpha
+{
+    _shadowAlpha = shadowAlpha;
+    self.layer.shadowOpacity = shadowAlpha;
+}
+
 @end

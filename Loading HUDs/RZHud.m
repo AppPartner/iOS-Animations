@@ -95,20 +95,22 @@
         
         self.usingFold = NO;
         self.hudStyle = style;
-        self.overlayColor = [UIColor clearColor];
-        self.hudColor = [UIColor blackColor];
-        self.spinnerColor = [UIColor whiteColor];
-        self.borderColor = nil;
-        self.borderWidth = 0;
-        self.hudAlpha = 0.98;
-        self.shadowAlpha = 0.15;
-        self.circleRadius = 40.0;
-        self.cornerRadius = 16.0;
-        self.labelColor = [UIColor whiteColor];
-        self.labelFont = [UIFont systemFontOfSize:17];
+        
+        // Avoid using properties here to not disrupt UIAppearance
+        _hudAlpha = 0.98;
+        _hudColor = [UIColor blackColor];
+        _overlayColor = [UIColor clearColor];
+        _spinnerColor = [UIColor whiteColor];
+        _borderWidth = 0;
+        _shadowAlpha = 0.15;
+        _circleRadius = 40.0;
+        _cornerRadius = 16.0;
+        _labelColor = [UIColor whiteColor];
+        _labelFont = [UIFont systemFontOfSize:17];
         
         // clear for now, could add a gradient or something here
         self.backgroundColor = [UIColor clearColor];
+        self.opaque = NO;
         self.userInteractionEnabled = YES;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
@@ -219,6 +221,7 @@
         self.hudBoxView.labelFont = self.labelFont;
         self.hudBoxView.spinnerColor = self.spinnerColor;
         self.hudBoxView.customView = self.customView;
+        self.hudBoxView.shadowAlpha = self.shadowAlpha;
     }
     else if (self.hudStyle == RZHudStyleCircle)
     {
@@ -344,7 +347,7 @@
                 
         [self animateCircleShadowToPath:[self shadowPathForRadius:self.circleRadius raisedState:YES].CGPath
                            shadowRadius:3.0
-                                  alpha:0.14
+                                  alpha:self.shadowAlpha
                                   curve:[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut]
                                duration:kDefaultSizeTime];
         
@@ -480,17 +483,116 @@
 - (void)setCustomView:(UIView *)customView
 {
     _customView = customView;
-    if (self.hudBoxView)
-    {
-        self.hudBoxView.customView = customView;
-    }
-
+    self.hudBoxView.customView = customView;
 }
 
 - (void)setLabelText:(NSString *)labelText
 {
     _labelText = labelText;
     self.hudBoxView.labelText = labelText;
+}
+
+// Most of the below overrides are for UIAppearance to work properly
+
+- (void)setHudColor:(UIColor *)hudColor
+{
+    switch (self.hudStyle) {
+        case RZHudStyleBoxInfo:
+        case RZHudStyleBoxLoading:
+            self.hudBoxView.color = hudColor;
+            break;
+            
+        case RZHudStyleCircle:
+            self.circleView.color = hudColor;
+            break;
+            
+        default:
+            break;
+    }
+    
+    _hudColor = hudColor;
+}
+
+- (void)setSpinnerColor:(UIColor *)spinnerColor
+{
+    switch (self.hudStyle) {
+        case RZHudStyleBoxInfo:
+        case RZHudStyleBoxLoading:
+            self.hudBoxView.spinnerColor = spinnerColor;
+            break;
+            
+        case RZHudStyleCircle:
+            self.spinnerView.color = spinnerColor;
+            break;
+            
+        default:
+            break;
+    }
+    
+    _spinnerColor = spinnerColor;
+}
+
+- (void)setBorderColor:(UIColor *)borderColor
+{
+    switch (self.hudStyle) {
+        case RZHudStyleBoxInfo:
+        case RZHudStyleBoxLoading:
+            self.hudBoxView.borderColor = borderColor;
+            break;
+            
+        case RZHudStyleCircle:
+            self.circleView.borderColor = borderColor;
+            break;
+            
+        default:
+            break;
+    }
+    
+    _borderColor = borderColor;
+}
+
+- (void)setBorderWidth:(CGFloat)borderWidth
+{
+    switch (self.hudStyle) {
+        case RZHudStyleBoxInfo:
+        case RZHudStyleBoxLoading:
+            self.hudBoxView.borderWidth = borderWidth;
+            break;
+            
+        case RZHudStyleCircle:
+            self.circleView.borderWidth = borderWidth;
+            break;
+            
+        default:
+            break;
+    }
+    
+    _borderWidth = borderWidth;
+}
+
+- (void)setLabelFont:(UIFont *)labelFont
+{
+    _labelFont = labelFont;
+    self.hudBoxView.labelFont = labelFont;
+}
+
+- (void)setLabelColor:(UIColor *)labelColor
+{
+    _labelColor = labelColor;
+    self.hudBoxView.labelColor = labelColor;
+}
+
+- (void)setShadowAlpha:(CGFloat)shadowAlpha
+{
+    _shadowAlpha = shadowAlpha;
+    self.hudBoxView.shadowAlpha = shadowAlpha;
+    // no need to set on circle view, it will be animated to target
+}
+
+- (void)setCornerRadius:(CGFloat)cornerRadius
+{
+    _cornerRadius = cornerRadius;
+    self.hudBoxView.cornerRadius = cornerRadius;
 }
 
 #pragma mark - Controllable page flipper delegate
