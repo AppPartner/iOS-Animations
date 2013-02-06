@@ -486,10 +486,20 @@
     self.hudBoxView.customView = customView;
 }
 
+- (NSString*)labelText
+{
+    if (_labelText == nil){
+        return @"Loading…";
+    }
+    return _labelText;
+}
+
 - (void)setLabelText:(NSString *)labelText
 {
     _labelText = labelText;
-    self.hudBoxView.labelText = labelText;
+    
+    // use property here to use default if argument is nil
+    self.hudBoxView.labelText = self.labelText;
 }
 
 // Most of the below overrides are for UIAppearance to work properly

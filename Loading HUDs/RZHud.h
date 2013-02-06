@@ -34,7 +34,7 @@ typedef enum {
 @property (assign, nonatomic) CGFloat   cornerRadius    UI_APPEARANCE_SELECTOR;
 @property (strong, nonatomic) UIColor   *labelColor     UI_APPEARANCE_SELECTOR;
 @property (strong, nonatomic) UIFont    *labelFont      UI_APPEARANCE_SELECTOR;
-@property (strong, nonatomic) NSString  *labelText;
+@property (strong, nonatomic) NSString  *labelText      UI_APPEARANCE_SELECTOR;
 
 // these apply to circle hud style only
 @property (assign, nonatomic) CGFloat circleRadius;

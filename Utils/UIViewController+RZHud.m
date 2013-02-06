@@ -24,18 +24,18 @@ static char * const kRZHudAssociationKey = "RZHudKey";
 }
 
 -(void) showHUD{
-    [self showHUDWithMessage:@"Loading…" inView:self.view];
+    [self showHUDWithMessage:nil inView:self.view];
 }
 
 -(void) showHUDOnRoot{
-    [self showHUDWithMessageOnRoot:@"Loading…"];
+    [self showHUDOnRootWithMessage:nil];
 }
 
 -(void) showHUDWithMessage:(NSString *)message{
     [self showHUDWithMessage:message inView:self.view];
 }
 
-- (void) showHUDWithMessageOnRoot:(NSString*)message
+- (void) showHUDOnRootWithMessage:(NSString*)message
 {
     UIView *rootView = [[[UIApplication sharedApplication] keyWindow] rootViewController].view;
     [self showHUDWithMessage:message inView:rootView];
@@ -48,7 +48,9 @@ static char * const kRZHudAssociationKey = "RZHudKey";
     [self hideHUD];
     
     self.hud = [[RZHud alloc] initWithStyle:RZHudStyleBoxLoading];
-    self.hud.labelText = message;
+    if (message != nil){
+        self.hud.labelText = message;
+    }
     [self.hud presentInView:view withFold:NO];
 }
 
@@ -59,7 +61,9 @@ static char * const kRZHudAssociationKey = "RZHudKey";
     [self hideHUD];
     
     self.hud = [[RZHud alloc] initWithStyle:RZHudStyleBoxInfo];
-    self.hud.labelText = message;
+    if (message != nil){
+        self.hud.labelText = message;
+    }
     self.hud.customView = customView;
     [self.hud presentInView:view withFold:NO];
 }

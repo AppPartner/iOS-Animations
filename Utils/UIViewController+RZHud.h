@@ -24,7 +24,7 @@
 -(void) showHUDOnRoot;
 
 //! Show loading HUD on root view controller
--(void) showHUDWithMessageOnRoot:(NSString*)message;
+-(void) showHUDOnRootWithMessage:(NSString*)message;
 
 //! Shows informational HUD with optional accessory view
 -(void) showInfoHUDWithMessage:(NSString*)message customView:(UIView*)customView inView:(UIView*)view;
