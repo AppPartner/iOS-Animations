@@ -24,11 +24,11 @@ static char * const kRZHudAssociationKey = "RZHudKey";
 }
 
 -(void) showHUD{
-    [self showHUDWithMessage:@"JUST A MOMENT…" inView:self.view];
+    [self showHUDWithMessage:@"Loading…" inView:self.view];
 }
 
 -(void) showHUDOnRoot{
-    [self showHUDWithMessageOnRoot:@"JUST A MOMENT…"];
+    [self showHUDWithMessageOnRoot:@"Loading…"];
 }
 
 -(void) showHUDWithMessage:(NSString *)message{
@@ -48,12 +48,6 @@ static char * const kRZHudAssociationKey = "RZHudKey";
     [self hideHUD];
     
     self.hud = [[RZHud alloc] initWithStyle:RZHudStyleBoxLoading];
-    self.hud.overlayColor = [UIColor colorWithWhite:1.0 alpha:0.1];
-    self.hud.hudColor = [UIColor whiteColor];
-    self.hud.borderColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-    self.hud.borderWidth = 2.0;
-    self.hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:17];
-    self.hud.labelColor = [UIColor grayColor];
     self.hud.labelText = message;
     [self.hud presentInView:view withFold:NO];
 }
@@ -65,12 +59,6 @@ static char * const kRZHudAssociationKey = "RZHudKey";
     [self hideHUD];
     
     self.hud = [[RZHud alloc] initWithStyle:RZHudStyleBoxInfo];
-    self.hud.overlayColor = [UIColor colorWithWhite:1.0 alpha:0.1];
-    self.hud.hudColor = [UIColor whiteColor];
-    self.hud.borderColor = [UIColor colorWithWhite:0.85 alpha:1.0];
-    self.hud.borderWidth = 2.0;
-    self.hud.labelFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:17];
-    self.hud.labelColor = [UIColor grayColor];
     self.hud.labelText = message;
     self.hud.customView = customView;
     [self.hud presentInView:view withFold:NO];
@@ -83,7 +71,6 @@ static char * const kRZHudAssociationKey = "RZHudKey";
     [self hideHUD];
     UIView *hudParent = root ? [[[UIApplication sharedApplication] keyWindow] rootViewController].view : self.view;
     self.hud = [[RZHud alloc] initWithStyle:RZHudStyleOverlay];
-    self.hud.overlayColor = [UIColor colorWithWhite:1.0 alpha:0.1];
     [self.hud presentInView:hudParent withFold:NO];
 }
 
