@@ -62,7 +62,7 @@
         self.messageLabel.autoresizingMask = UIViewAutoresizingFlexibleTopMargin;
         self.messageLabel.adjustsFontSizeToFitWidth = NO;
         self.messageLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-        self.messageLabel.textAlignment = NSTextAlignmentLeft;
+        self.messageLabel.textAlignment = style == RZHudBoxStyleInfo ? NSTextAlignmentLeft : NSTextAlignmentCenter;
         self.messageLabel.font = [UIFont systemFontOfSize:18];
         self.messageLabel.shadowColor = [UIColor clearColor];
         
