@@ -39,6 +39,8 @@ typedef enum {
 // these apply to circle hud style only
 @property (assign, nonatomic) CGFloat circleRadius;
 
+@property (assign, nonatomic) BOOL blocksTouches;
+
 - (id)initWithStyle:(RZHudStyle)style;
 - (void)presentInView:(UIView*)view withFold:(BOOL)fold;
 - (void)presentInView:(UIView *)view withFold:(BOOL)fold afterDelay:(NSTimeInterval)delay;

@@ -107,6 +107,7 @@
         _cornerRadius = 16.0;
         _labelColor = [UIColor whiteColor];
         _labelFont = [UIFont systemFontOfSize:17];
+        _blocksTouches = YES;
         
         // clear for now, could add a gradient or something here
         self.backgroundColor = [UIColor clearColor];
@@ -459,6 +460,12 @@
 }
 
 #pragma mark - Properties
+
+- (void)setBlocksTouches:(BOOL)blocksTouches
+{
+    _blocksTouches = blocksTouches;
+    self.userInteractionEnabled = blocksTouches;
+}
 
 - (void)setHudStyle:(RZHudStyle)hudStyle
 {
