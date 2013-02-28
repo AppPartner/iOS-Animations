@@ -28,7 +28,7 @@
 @property (strong, nonatomic) RZHudBoxView *hudBoxView;
 @property (strong, nonatomic) ControllablePageFlipper *pageFlipper;
 @property (strong, nonatomic) UIActivityIndicatorView *spinnerView;
-@property (copy, nonatomic) HUDDismissBlock dismissBlock;
+@property (copy, nonatomic)   HUDDismissBlock dismissBlock;
 
 @property (assign, nonatomic) BOOL usingFold;
 @property (assign, nonatomic) BOOL fullyPresented;
@@ -60,7 +60,6 @@
 @synthesize borderColor = _borderColor;
 @synthesize borderWidth = _borderWidth;
 
-@synthesize hudAlpha = _hudAlpha;
 @synthesize shadowAlpha = _shadowAlpha;
 
 @synthesize circleRadius = _circleRadius;
@@ -97,8 +96,7 @@
         self.hudStyle = style;
         
         // Avoid using properties here to not disrupt UIAppearance
-        _hudAlpha = 0.98;
-        _hudColor = [UIColor blackColor];
+        _hudColor = [UIColor colorWithWhite:0 alpha:0.9];
         _overlayColor = [UIColor clearColor];
         _spinnerColor = [UIColor whiteColor];
         _borderWidth = 0;
@@ -233,7 +231,6 @@
         self.hudContainerView.clipsToBounds = NO;
         self.hudContainerView.opaque = NO;
         self.hudContainerView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-        self.hudContainerView.alpha = self.hudAlpha;
         
         // setup hud view and mask
         
@@ -273,7 +270,6 @@
                                                                    fromState:open ? kCPF_Open : kCPF_Closed 
                                                                    fromRight:YES];
     self.pageFlipper.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-    self.pageFlipper.alpha = self.hudAlpha;
     self.pageFlipper.delegate = self;
     self.pageFlipper.animationTime = kDefaultFlipTime;
     self.pageFlipper.shadowMask = kCPF_NoShadow;
@@ -316,7 +312,7 @@
         }
         [UIView animateWithDuration:kDefaultOverlayTime
                          animations:^{
-                             hudView.alpha = self.hudAlpha;
+                             hudView.alpha = 1.0;
                              self.backgroundColor = self.overlayColor;
                          }
                          completion:^(BOOL finished) {

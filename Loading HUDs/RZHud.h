@@ -27,7 +27,6 @@ typedef enum {
 @property (strong, nonatomic) UIColor *spinnerColor UI_APPEARANCE_SELECTOR;
 @property (strong, nonatomic) UIColor *borderColor  UI_APPEARANCE_SELECTOR;
 @property (assign, nonatomic) CGFloat borderWidth   UI_APPEARANCE_SELECTOR;
-@property (assign, nonatomic) CGFloat hudAlpha      UI_APPEARANCE_SELECTOR;
 @property (assign, nonatomic) CGFloat shadowAlpha   UI_APPEARANCE_SELECTOR;
 
 // these apply to box hud style only
