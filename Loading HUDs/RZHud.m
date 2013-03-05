@@ -123,7 +123,6 @@
 
 - (void)presentInView:(UIView *)view withFold:(BOOL)fold afterDelay:(NSTimeInterval)delay
 {
-    
     if (self.superview) return;
     
     // setup container for hud
