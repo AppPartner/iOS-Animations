@@ -37,7 +37,8 @@ static char * const kRZHudAssociationKey = "RZHudKey";
 
 - (void) showHUDOnRootWithMessage:(NSString*)message
 {
-    UIView *rootView = [[UIApplication sharedApplication] keyWindow];
+    UIView *rootView = [[[[UIApplication sharedApplication] keyWindow] rootViewController] view];
+    
     [self showHUDWithMessage:message inView:rootView];
 }
 

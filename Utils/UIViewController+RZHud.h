@@ -20,7 +20,7 @@
 //! Show HUD with custom message on specified view
 -(void) showHUDWithMessage:(NSString *)message inView:(UIView*)view;
 
-//! Show HUD with default message on root view controller
+//! Show HUD with default message on root view controller. If a modal is presented, HUD will not be visible.
 -(void) showHUDOnRoot;
 
 //! Show loading HUD on root view controller
