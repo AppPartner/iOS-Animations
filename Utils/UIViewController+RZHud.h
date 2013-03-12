@@ -29,6 +29,9 @@
 //! Shows informational HUD with optional accessory view
 -(void) showInfoHUDWithMessage:(NSString*)message customView:(UIView*)customView inView:(UIView*)view;
 
+//! Shows informational HUD on root view controller with optional accessory view
+-(void) showInfoHUDOnRootWithMessage:(NSString*)message customView:(UIView*)customView;
+
 //! Blocks all touches in app using transparent view
 -(void) showOverlayOnlyHUDOnRoot:(BOOL)root;
 

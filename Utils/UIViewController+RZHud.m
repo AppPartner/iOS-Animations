@@ -55,6 +55,13 @@ static char * const kRZHudAssociationKey = "RZHudKey";
     [self.hud presentInView:view withFold:NO];
 }
 
+-(void) showInfoHUDOnRootWithMessage:(NSString*)message customView:(UIView*)customView
+{
+    UIView *rootView = [[[[UIApplication sharedApplication] keyWindow] rootViewController] view];
+    
+    [self showInfoHUDWithMessage:message customView:customView inView:rootView];
+}
+
 -(void) showInfoHUDWithMessage:(NSString *)message customView:(UIView *)customView inView:(UIView *)view
 {
     if (![self respondsToSelector:@selector(setHud:)]) return;
