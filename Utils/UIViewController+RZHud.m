@@ -87,8 +87,11 @@ static char * const kRZHudAssociationKey = "RZHudKey";
 }
 
 -(void) hideHUDWithCompletionBlock:(void (^)())block{
-    if (![self respondsToSelector:@selector(setHud:)]){
-        block();
+    
+    if (![self respondsToSelector:@selector(setHud:)] || self.hud == nil){
+        if (block){
+            block();
+        }
         return;
     }
     
