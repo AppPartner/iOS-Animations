@@ -13,10 +13,10 @@
 #define kDefaultWidth       140
 #define kDefaultHeight      110
 
-#define kMinDimensionIpad   22
+#define kMinDimensionIpad   60.f
 
-#define kOuterPadding       15
-#define kElementPadding     10
+#define kOuterPadding       16.f
+#define kElementPadding     10.f
 
 #define kLayoutAnimationTime 0.2
 
@@ -83,18 +83,38 @@
 
 - (void)updateLayoutAnimated:(BOOL)animated
 {
+    BOOL isLoadingStyle = (self.style == RZHudBoxStyleLoading);
+    
     CGSize labelSize = CGSizeZero;
     if (self.labelText.length){
         CGFloat maxWidth = self.superview ? self.superview.bounds.size.width - 4*kOuterPadding : CGFLOAT_MAX;
         labelSize = [self.labelText sizeWithFont:self.labelFont constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)];
     }
     
-    CGFloat newWidth = MAX(labelSize.width + 2*kOuterPadding, kMinDimensionIpad);
+    CGFloat newWidth = labelSize.width + 2*kOuterPadding;
     if (self.customView){
-        newWidth += self.customView.bounds.size.width + kElementPadding;
+        if (isLoadingStyle){
+            newWidth = MAX(newWidth, self.customView.bounds.size.width + 2*kOuterPadding);
+        }
+        else{
+            newWidth += self.customView.bounds.size.width + kElementPadding;
+        }
+    }
+    newWidth = MAX(newWidth, kMinDimensionIpad);
+    
+    CGFloat newHeight;
+    if (isLoadingStyle){
+        if (self.customView){
+            newHeight = self.customView.bounds.size.height + kElementPadding + labelSize.height;
+        }
+        else{
+            newHeight = labelSize.height + self.activitySpinner.bounds.size.height + kElementPadding;
+        }
+    }
+    else{
+        newHeight = MAX(self.customView.bounds.size.height, labelSize.height);
     }
     
-    CGFloat newHeight = MAX(self.customView.bounds.size.height, labelSize.height + self.activitySpinner.bounds.size.height + kElementPadding);
     newHeight = MAX(newHeight + 2*kOuterPadding, kMinDimensionIpad);
     
     CGRect oldFrame = self.frame;
@@ -106,13 +126,23 @@
     
     CGRect customViewFrame = CGRectZero;
     if (self.customView){
-        CGFloat originY = (newFrame.size.height - self.customView.bounds.size.height)/2;
-        customViewFrame = CGRectMake(kOuterPadding, originY, self.customView.bounds.size.width, self.customView.bounds.size.height);
+        CGFloat cvOriginX = isLoadingStyle ? (newWidth - self.customView.bounds.size.width)*0.5f : kOuterPadding;
+        CGFloat cvOriginY = isLoadingStyle ? kOuterPadding : (newFrame.size.height - self.customView.bounds.size.height)*0.5f;
+        customViewFrame = CGRectIntegral(CGRectMake(cvOriginX, cvOriginY, self.customView.bounds.size.width, self.customView.bounds.size.height));
     }
     
     CGRect newMessageFrame = (CGRect){CGPointZero, labelSize};
-    newMessageFrame.origin.x = self.customView ? CGRectGetMaxX(self.customView.frame) + kElementPadding : kOuterPadding;
-    newMessageFrame.origin.y = self.activitySpinner ? newFrame.size.height - kOuterPadding - labelSize.height : (newFrame.size.height - newMessageFrame.size.height)/2;
+    if (isLoadingStyle){
+        
+        newMessageFrame.origin.x = (newWidth - labelSize.width)*0.5f;
+        newMessageFrame.origin.y = newFrame.size.height - kOuterPadding - labelSize.height;
+    }
+    else{
+        newMessageFrame.origin.x = self.customView ? CGRectGetMaxX(self.customView.frame) + kElementPadding : kOuterPadding;
+        newMessageFrame.origin.y = (newFrame.size.height - newMessageFrame.size.height)*0.5f;
+    }
+    
+    newMessageFrame = CGRectIntegral(newMessageFrame);
     
     CGPoint activityCenter = CGPointZero;
     if (self.activitySpinner){
@@ -207,11 +237,6 @@
 
 - (void)setCustomView:(UIView *)customView
 {
-    if (customView && self.style != RZHudBoxStyleInfo){
-        NSLog(@"Warning: Custom HUD view only valid for style RZHudStyleInfo");
-        return;
-    }
-    
     if (customView && self.superview){
         NSLog(@"Warning: Cannot change HUD custom image while presented!");
         return;
@@ -221,8 +246,12 @@
         [_customView removeFromSuperview];
         self.customView = nil;
     }
+    
     _customView = customView;
+    
     if (customView){
+        [_activitySpinner removeFromSuperview];
+        _activitySpinner = nil;
         customView.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleRightMargin;
         [self addSubview:_customView];
     }
