@@ -183,6 +183,12 @@
                          }
                          completion:^(BOOL finished) {
                              [self removeFromSuperview];
+                             
+                             if(self.animationArray != nil && [self.customView isKindOfClass:[UIImageView class]])
+                             {
+                                 [(UIImageView *)self.customView stopAnimating];
+                             }
+                             
                              if (self.dismissBlock){
                                  self.dismissBlock();
                                  self.dismissBlock = nil;
@@ -486,6 +492,31 @@
 {
     _customView = customView;
     self.hudBoxView.customView = customView;
+}
+
+- (void)setAnimationArray:(NSArray *)animationArray withDuration:(CGFloat)duration
+{
+    _animationArray = animationArray;
+    _animationDuration = duration;
+    
+    UIImageView *customView = [[UIImageView alloc] init];
+    customView.animationImages = animationArray;
+    customView.animationDuration = duration;
+    
+    [customView startAnimating];
+    
+    [self setCustomView:customView];
+}
+
+- (void)setAnimationDuration:(CGFloat)animationDuration
+{
+    if(self.animationArray != nil)
+    {
+        if([self.customView isKindOfClass:[UIImageView class]])
+        {
+            [(UIImageView *)self.customView setAnimationDuration:animationDuration];
+        }
+    }
 }
 
 - (NSString*)labelText
