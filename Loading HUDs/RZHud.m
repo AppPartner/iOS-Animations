@@ -19,6 +19,8 @@
 #define kDefaultOverlayTime         0.25
 #define kPopupMultiplier            1.2
 
+#define kDefaultPNGImageViewFrame   CGRectMake(0, 0, 30, 30)
+
 @interface RZHud ()
 
 @property (assign, nonatomic) RZHudStyle hudStyle;
@@ -184,7 +186,7 @@
                          completion:^(BOOL finished) {
                              [self removeFromSuperview];
                              
-                             if(self.animationArray != nil && [self.customView isKindOfClass:[UIImageView class]])
+                             if(self.imageViewAnimationArray != nil && [self.customView isKindOfClass:[UIImageView class]])
                              {
                                  [(UIImageView *)self.customView stopAnimating];
                              }
@@ -494,14 +496,15 @@
     self.hudBoxView.customView = customView;
 }
 
-- (void)setAnimationArray:(NSArray *)animationArray withDuration:(CGFloat)duration
+- (void)setImageViewAnimationArray:(NSArray *)imageViewAnimationArray
 {
-    _animationArray = animationArray;
-    _animationDuration = duration;
+    _imageViewAnimationArray = imageViewAnimationArray;
     
     UIImageView *customView = [[UIImageView alloc] init];
-    customView.animationImages = animationArray;
-    customView.animationDuration = duration;
+    customView.animationImages = imageViewAnimationArray;
+    customView.animationDuration = self.imageViewAnimationDuration;
+    customView.contentMode = UIViewContentModeScaleAspectFit;
+    customView.frame = kDefaultPNGImageViewFrame;
     
     [customView startAnimating];
     
@@ -510,7 +513,7 @@
 
 - (void)setAnimationDuration:(CGFloat)animationDuration
 {
-    if(self.animationArray != nil)
+    if(self.imageViewAnimationArray != nil)
     {
         if([self.customView isKindOfClass:[UIImageView class]])
         {
