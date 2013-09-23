@@ -244,7 +244,7 @@
     
     if (_customView){
         [_customView removeFromSuperview];
-        self.customView = nil;
+        _customView = nil;
     }
     
     _customView = customView;
