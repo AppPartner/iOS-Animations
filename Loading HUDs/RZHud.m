@@ -511,13 +511,17 @@
     [self setCustomView:customView];
 }
 
-- (void)setAnimationDuration:(CGFloat)animationDuration
+- (void)setImageViewAnimationDuration:(CGFloat)imageViewAnimationDuration
 {
+    _imageViewAnimationDuration = imageViewAnimationDuration;
+    
     if(self.imageViewAnimationArray != nil)
     {
         if([self.customView isKindOfClass:[UIImageView class]])
         {
-            [(UIImageView *)self.customView setAnimationDuration:animationDuration];
+            [(UIImageView *)self.customView stopAnimating];
+            [(UIImageView *)self.customView setAnimationDuration:imageViewAnimationDuration];
+            [(UIImageView *)self.customView startAnimating];
         }
     }
 }
