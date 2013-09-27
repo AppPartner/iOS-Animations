@@ -19,6 +19,8 @@
 #define kDefaultOverlayTime         0.25
 #define kPopupMultiplier            1.2
 
+#define kDefaultPNGImageViewFrame   CGRectMake(0, 0, 30, 30)
+
 @interface RZHud ()
 
 @property (assign, nonatomic) RZHudStyle hudStyle;
@@ -183,6 +185,12 @@
                          }
                          completion:^(BOOL finished) {
                              [self removeFromSuperview];
+                             
+                             if(self.imageViewAnimationArray != nil && [self.customView isKindOfClass:[UIImageView class]])
+                             {
+                                 [(UIImageView *)self.customView stopAnimating];
+                             }
+                             
                              if (self.dismissBlock){
                                  self.dismissBlock();
                                  self.dismissBlock = nil;
@@ -486,6 +494,36 @@
 {
     _customView = customView;
     self.hudBoxView.customView = customView;
+}
+
+- (void)setImageViewAnimationArray:(NSArray *)imageViewAnimationArray
+{
+    _imageViewAnimationArray = imageViewAnimationArray;
+    
+    UIImageView *customView = [[UIImageView alloc] init];
+    customView.animationImages = imageViewAnimationArray;
+    customView.animationDuration = self.imageViewAnimationDuration;
+    customView.contentMode = UIViewContentModeScaleAspectFit;
+    customView.frame = kDefaultPNGImageViewFrame;
+    
+    [customView startAnimating];
+    
+    [self setCustomView:customView];
+}
+
+- (void)setImageViewAnimationDuration:(CGFloat)imageViewAnimationDuration
+{
+    _imageViewAnimationDuration = imageViewAnimationDuration;
+    
+    if(self.imageViewAnimationArray != nil)
+    {
+        if([self.customView isKindOfClass:[UIImageView class]] && [(UIImageView *)self.customView animationImages].count > 0)
+        {
+            [(UIImageView *)self.customView stopAnimating];
+            [(UIImageView *)self.customView setAnimationDuration:imageViewAnimationDuration];
+            [(UIImageView *)self.customView startAnimating];
+        }
+    }
 }
 
 - (NSString*)labelText

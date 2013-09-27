@@ -21,13 +21,16 @@ typedef enum {
 @interface RZHud : UIView <CPFlipperDelegate, UIAppearance>
 
 /// @name Style properties
-@property (strong, nonatomic) UIView  *customView   UI_APPEARANCE_SELECTOR;
-@property (strong, nonatomic) UIColor *overlayColor UI_APPEARANCE_SELECTOR;
-@property (strong, nonatomic) UIColor *hudColor     UI_APPEARANCE_SELECTOR;
-@property (strong, nonatomic) UIColor *spinnerColor UI_APPEARANCE_SELECTOR;
-@property (strong, nonatomic) UIColor *borderColor  UI_APPEARANCE_SELECTOR;
-@property (assign, nonatomic) CGFloat borderWidth   UI_APPEARANCE_SELECTOR;
-@property (assign, nonatomic) CGFloat shadowAlpha   UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIView  *customView       UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIColor *overlayColor     UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIColor *hudColor         UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIColor *spinnerColor     UI_APPEARANCE_SELECTOR;
+@property (strong, nonatomic) UIColor *borderColor      UI_APPEARANCE_SELECTOR;
+@property (assign, nonatomic) CGFloat borderWidth       UI_APPEARANCE_SELECTOR;
+@property (assign, nonatomic) CGFloat shadowAlpha       UI_APPEARANCE_SELECTOR;
+
+@property (strong, nonatomic) NSArray *imageViewAnimationArray      UI_APPEARANCE_SELECTOR;
+@property (assign, nonatomic) CGFloat imageViewAnimationDuration    UI_APPEARANCE_SELECTOR;
 
 // these apply to box hud style only
 @property (assign, nonatomic) CGFloat   cornerRadius    UI_APPEARANCE_SELECTOR;
