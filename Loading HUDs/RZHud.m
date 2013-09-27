@@ -517,7 +517,7 @@
     
     if(self.imageViewAnimationArray != nil)
     {
-        if([self.customView isKindOfClass:[UIImageView class]])
+        if([self.customView isKindOfClass:[UIImageView class]] && [(UIImageView *)self.customView animationImages].count > 0)
         {
             [(UIImageView *)self.customView stopAnimating];
             [(UIImageView *)self.customView setAnimationDuration:imageViewAnimationDuration];
