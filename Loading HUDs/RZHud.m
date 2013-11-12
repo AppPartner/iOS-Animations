@@ -176,15 +176,29 @@
         [self popOutCircle:NO];
     }
     else {
+        BOOL shouldFade = (self.presentationStyle & RZHudAnimationMaskFade) == RZHudAnimationMaskFade;
+        BOOL shouldZoom = (self.presentationStyle & RZHudAnimationMaskZoom) == RZHudAnimationMaskZoom;
+        
         [UIView animateWithDuration:kDefaultOverlayTime
                               delay:0
                             options:UIViewAnimationOptionBeginFromCurrentState
                          animations:^{
                              self.backgroundColor = [UIColor clearColor];
-                             self.hudBoxView.alpha = 0.0;
+                             if (shouldFade)
+                             {
+                                 self.hudBoxView.alpha = 0.0;
+                             }
+                             if (shouldZoom)
+                             {
+                                 self.hudBoxView.transform = CGAffineTransformMakeScale(0.5f, 0.5f);
+                             }
                          }
                          completion:^(BOOL finished) {
                              [self removeFromSuperview];
+                             if (shouldZoom)
+                             {
+                                 self.hudBoxView.transform = CGAffineTransformIdentity;
+                             }
                              
                              if(self.imageViewAnimationArray != nil && [self.customView isKindOfClass:[UIImageView class]])
                              {
@@ -313,13 +327,31 @@
         [self.pageFlipper animateToState:kCPF_Open];
     }
     else{
-        if (self.hudStyle != RZHudStyleOverlay){
-            hudView.alpha = 0.0;
+        BOOL shouldFade = (self.presentationStyle & RZHudAnimationMaskFade) == RZHudAnimationMaskFade;
+        BOOL shouldZoom = (self.presentationStyle & RZHudAnimationMaskZoom) == RZHudAnimationMaskZoom;
+        
+        if (self.hudStyle != RZHudStyleOverlay)
+        {
+            if (shouldFade)
+            {
+                hudView.alpha = 0.0;
+            }
+            if (shouldZoom)
+            {
+                hudView.transform = CGAffineTransformMakeScale(2.f, 2.f);
+            }
             [self addSubview:hudView];
         }
         [UIView animateWithDuration:kDefaultOverlayTime
                          animations:^{
-                             hudView.alpha = 1.0;
+                             if (shouldFade)
+                             {
+                                 hudView.alpha = 1.0;
+                             }
+                             if (shouldZoom)
+                             {
+                                 hudView.transform = CGAffineTransformIdentity;
+                             }
                              self.backgroundColor = self.overlayColor;
                          }
                          completion:^(BOOL finished) {
