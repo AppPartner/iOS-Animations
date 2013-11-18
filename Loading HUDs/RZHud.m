@@ -190,7 +190,7 @@
                              }
                              if (shouldZoom)
                              {
-                                 self.hudBoxView.transform = CGAffineTransformMakeScale(0.5f, 0.5f);
+                                 self.hudBoxView.transform = CGAffineTransformMakeScale(0.8f, 0.8f);
                              }
                          }
                          completion:^(BOOL finished) {
@@ -338,7 +338,7 @@
             }
             if (shouldZoom)
             {
-                hudView.transform = CGAffineTransformMakeScale(2.f, 2.f);
+                hudView.transform = CGAffineTransformMakeScale(1.2f, 1.2f);
             }
             [self addSubview:hudView];
         }
