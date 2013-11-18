@@ -115,6 +115,9 @@
         self.userInteractionEnabled = YES;
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
+        // default to fade presentation style
+        _presentationStyle = RZHudAnimationMaskFade;
+        
     }
     return self;
 }
