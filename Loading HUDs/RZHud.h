@@ -18,6 +18,11 @@ typedef enum {
     RZHudStyleOverlay
 } RZHudStyle;
 
+typedef enum {
+    RZHudAnimationMaskFade = 1,
+    RZHudAnimationMaskZoom = 2
+} RZHudAnimationMask;
+
 @interface RZHud : UIView <CPFlipperDelegate, UIAppearance>
 
 /// @name Style properties
@@ -37,6 +42,8 @@ typedef enum {
 @property (strong, nonatomic) UIColor   *labelColor     UI_APPEARANCE_SELECTOR;
 @property (strong, nonatomic) UIFont    *labelFont      UI_APPEARANCE_SELECTOR;
 @property (strong, nonatomic) NSString  *labelText      UI_APPEARANCE_SELECTOR;
+
+@property (assign, nonatomic) RZHudAnimationMask presentationStyle UI_APPEARANCE_SELECTOR;
 
 // these apply to circle hud style only
 @property (assign, nonatomic) CGFloat circleRadius;
