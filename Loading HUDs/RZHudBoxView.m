@@ -88,7 +88,10 @@
     CGSize labelSize = CGSizeZero;
     if (self.labelText.length){
         CGFloat maxWidth = self.superview ? self.superview.bounds.size.width - 4*kOuterPadding : CGFLOAT_MAX;
-        labelSize = [self.labelText sizeWithFont:self.labelFont constrainedToSize:CGSizeMake(maxWidth, CGFLOAT_MAX)];
+        NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:self.labelText attributes:@{ NSFontAttributeName : self.labelFont }];
+        labelSize = [attributedText boundingRectWithSize:CGSizeMake(maxWidth, CGFLOAT_MAX)
+                                                   options:NSStringDrawingUsesLineFragmentOrigin
+                                                   context:nil].size;
     }
     
     CGFloat newWidth = labelSize.width + 2*kOuterPadding;
