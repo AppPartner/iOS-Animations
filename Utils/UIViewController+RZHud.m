@@ -65,6 +65,10 @@ static char * const kRZHudAssociationKey = "RZHudKey";
 {
     if (![self respondsToSelector:@selector(setHud:)]) return;
     
+    if ( self.hud != nil ) {
+        return;
+    }
+    
     [self hideHUD];
     
     self.hud = [[RZHud alloc] initWithStyle:RZHudStyleBoxLoading];
