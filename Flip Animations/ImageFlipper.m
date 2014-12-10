@@ -339,8 +339,8 @@ CGFloat const kFlipperMaxGradientOpacity = 0.25;
         for (int n=0; n<self.nPages; n++){
             [(CATransformLayer*)[self.flipTransformLayers objectAtIndex:n] setTransform:CATransform3DMakeRotation(M_PI, 0, 1, 0)];
             [self.layer addSublayer:[self.flipTransformLayers objectAtIndex:n]];
-            [[self.leftPageGradientLayers objectAtIndex:n] setOpacity:kFlipperMaxGradientOpacity];
-            [[self.rightPageGradientLayers objectAtIndex:n] setOpacity:0];
+            [(CALayer *)[self.leftPageGradientLayers objectAtIndex:n] setOpacity:kFlipperMaxGradientOpacity];
+            [(CALayer *)[self.rightPageGradientLayers objectAtIndex:n] setOpacity:0];
         }
         
         
@@ -389,8 +389,8 @@ CGFloat const kFlipperMaxGradientOpacity = 0.25;
         for (int n=0; n<self.nPages; n++){
             [(CATransformLayer*)[self.flipTransformLayers objectAtIndex:n] setTransform:CATransform3DIdentity];
             [self.layer addSublayer:[self.flipTransformLayers objectAtIndex:n]];
-            [[self.leftPageGradientLayers objectAtIndex:n] setOpacity:0.0];
-            [[self.rightPageGradientLayers objectAtIndex:n] setOpacity:kFlipperMaxGradientOpacity];
+            [(CALayer *)[self.leftPageGradientLayers objectAtIndex:n] setOpacity:0.0];
+            [(CALayer *)[self.rightPageGradientLayers objectAtIndex:n] setOpacity:kFlipperMaxGradientOpacity];
         }
     
         self.leftShadowLayer.opacity = 0.0;
@@ -476,7 +476,7 @@ CGFloat const kFlipperMaxGradientOpacity = 0.25;
             rightPageGradientAnimation.toValue = [NSNumber numberWithDouble:kFlipperMaxGradientOpacity];
             rightPageGradientAnimation.fillMode = kCAFillModeBoth;
             rightPageGradientAnimation.keyPath = @"opacity";
-            [[self.rightPageGradientLayers objectAtIndex:n] setOpacity:kFlipperMaxGradientOpacity];
+            [(CALayer *)[self.rightPageGradientLayers objectAtIndex:n] setOpacity:kFlipperMaxGradientOpacity];
             [[self.rightPageGradientLayers objectAtIndex:n] addAnimation:rightPageGradientAnimation forKey:@"opacity"];
         }
     
@@ -490,7 +490,7 @@ CGFloat const kFlipperMaxGradientOpacity = 0.25;
             leftPageGradientAnimation.toValue = [NSNumber numberWithDouble:0.0];
             leftPageGradientAnimation.fillMode = kCAFillModeBoth;
             leftPageGradientAnimation.keyPath = @"opacity";
-            [[self.leftPageGradientLayers objectAtIndex:n] setOpacity:0.0];
+            [(CALayer *)[self.leftPageGradientLayers objectAtIndex:n] setOpacity:0.0];
             [[self.leftPageGradientLayers objectAtIndex:n] addAnimation:leftPageGradientAnimation forKey:@"opacity"];
         }
         
@@ -598,7 +598,7 @@ CGFloat const kFlipperMaxGradientOpacity = 0.25;
             rightPageGradientAnimation.fillMode = kCAFillModeBoth;
             rightPageGradientAnimation.keyPath = @"opacity";
             
-            [[self.rightPageGradientLayers objectAtIndex:n] setOpacity:0.0];
+            [(CALayer *)[self.rightPageGradientLayers objectAtIndex:n] setOpacity:0.0];
             [[self.rightPageGradientLayers objectAtIndex:n] addAnimation:rightPageGradientAnimation forKey:@"opacity"];
         }
             
@@ -612,7 +612,7 @@ CGFloat const kFlipperMaxGradientOpacity = 0.25;
             leftPageGradientAnimation.fillMode = kCAFillModeBoth;
             leftPageGradientAnimation.keyPath = @"opacity";
             
-            [[self.leftPageGradientLayers objectAtIndex:n] setOpacity:kFlipperMaxGradientOpacity];
+            [(CALayer *)[self.leftPageGradientLayers objectAtIndex:n] setOpacity:kFlipperMaxGradientOpacity];
             [[self.leftPageGradientLayers objectAtIndex:n] addAnimation:leftPageGradientAnimation forKey:@"opacity"];
         }
             
